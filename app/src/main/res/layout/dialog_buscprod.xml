@@ -24,7 +24,6 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:hint="@string/producto"
         android:layout_marginTop="5dp"
         android:textColorHint="@color/AzulBack"
@@ -51,16 +50,26 @@
             android:layout_margin="5dp"/>
     </com.google.android.material.textfield.TextInputLayout>
 
+    <ListView
+        android:id="@+id/lvBus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:visibility="gone"/>
+
+
     <Button
         android:id="@+id/btnB"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/buscar"
         android:fontFamily="sans-serif-condensed-medium"
-        android:background="@drawable/btn_background3"
+        android:background="@drawable/btn_background1"
         app:backgroundTint="@null"
         app:backgroundTintMode="add"
-        android:layout_margin="10dp"/>
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"/>
 
 
 </LinearLayout>
