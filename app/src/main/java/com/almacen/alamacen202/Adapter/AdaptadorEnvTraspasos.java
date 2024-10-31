@@ -37,8 +37,8 @@ public class AdaptadorEnvTraspasos extends RecyclerView.Adapter<AdaptadorEnvTras
         holder.n.setText(datos.get(position).getNum());
         holder.tvItemP.setText(datos.get(position).getProducto());
         holder.tvItemU.setText(datos.get(position).getUbic());
-        holder.tvItemC.setText(datos.get(position).getDisponible());
-        holder.tvItemE.setText(datos.get(position).getExistencia());
+        holder.tvItemC.setText(datos.get(position).getExistencia());
+        holder.tvItemE.setText(datos.get(position).getDisponible());
         holder.tvItemS.setText(totSurt+"");
 
         if(index==position){
