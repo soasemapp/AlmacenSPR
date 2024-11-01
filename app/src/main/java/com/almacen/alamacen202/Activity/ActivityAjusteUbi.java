@@ -165,8 +165,21 @@ public class ActivityAjusteUbi extends AppCompatActivity {
                 if(cant.equals("") || maxi.equals("")){
                     Toast.makeText(ActivityAjusteUbi.this, "Campos Vacios", Toast.LENGTH_SHORT).show();
                 }else{
-                    new AsyncActualiza(Producto,txtUbicac.getText().toString(),
-                            cant,maxi, comen).execute();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityAjusteUbi.this);
+                    String finalCant = cant;
+                    String finalMaxi = maxi;
+                    String finalComen = comen;
+                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            new AsyncActualiza(Producto,txtUbicac.getText().toString(),
+                                    finalCant, finalMaxi, finalComen).execute();
+                        }
+                    });
+                    builder.setNegativeButton("CANCELAR",null);
+                    builder.setCancelable(false);
+                    builder.setTitle("AVISO").setMessage("¿DESEA GUARDAR DATOS?").create().show();
+
                 }//else
             }
         });//btngrd
@@ -174,51 +187,58 @@ public class ActivityAjusteUbi extends AppCompatActivity {
         btnAggUbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityAjusteUbi.this);
-                builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String cant=txtCantidad.getText().toString();
-                        String maxi=txtMaxi.getText().toString();
-                        String comen=txtComentario.getText().toString();
-                        cant=cant.trim();maxi=maxi.trim();comen=comen.trim();
-                        if(cant.equals("") || maxi.equals("")){
-                            Toast.makeText(ActivityAjusteUbi.this, "Campos Vacios", Toast.LENGTH_SHORT).show();
-                        }else{
+                String cant=txtCantidad.getText().toString();
+                String maxi=txtMaxi.getText().toString();
+                String comen=txtComentario.getText().toString();
+                cant=cant.trim();maxi=maxi.trim();comen=comen.trim();
+                if(cant.equals("") || maxi.equals("")){
+                    Toast.makeText(ActivityAjusteUbi.this, "Campos Vacios", Toast.LENGTH_SHORT).show();
+                }else{
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityAjusteUbi.this);
+                    String finalCant = cant;
+                    String finalMaxi = maxi;
+                    String finalComen = comen;
+                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
                             new AsyncAgg(Producto,txtUbicac.getText().toString(),
-                                    cant,maxi, comen).execute();
-                        }//else
-                    }
-                });
-                builder.setNegativeButton("CANCELAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("¿DESEA AGREGAR UBICACIÓN NO-UBICADO?").create().show();
+                                    finalCant, finalMaxi, finalComen).execute();
+                        }
+                    });
+                    builder.setNegativeButton("CANCELAR",null);
+                    builder.setCancelable(false);
+                    builder.setTitle("AVISO").setMessage("¿DESEA AGREGAR UBICACIÓN NO-UBICADO?").create().show();
+
+                }//else
+
             }//onclcik
         });//
 
         btnTerm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityAjusteUbi.this);
-                builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String cant=txtCantidad.getText().toString();
-                        String maxi=txtMaxi.getText().toString();
-                        String comen=txtComentario.getText().toString();
-                        cant=cant.trim();maxi=maxi.trim();comen=comen.trim();
-                        if(cant.equals("") || maxi.equals("")){
-                            Toast.makeText(ActivityAjusteUbi.this, "Campos Vacios", Toast.LENGTH_SHORT).show();
-                        }else{
+                String cant=txtCantidad.getText().toString();
+                String maxi=txtMaxi.getText().toString();
+                String comen=txtComentario.getText().toString();
+                cant=cant.trim();maxi=maxi.trim();comen=comen.trim();
+                if(cant.equals("") || maxi.equals("")){
+                    Toast.makeText(ActivityAjusteUbi.this, "Campos Vacios", Toast.LENGTH_SHORT).show();
+                }else{
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityAjusteUbi.this);
+                    String finalCant = cant;
+                    String finalMaxi = maxi;
+                    String finalComen = comen;
+                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
                             new AsynTermina(Producto,txtUbicac.getText().toString(),
-                                    cant,maxi, comen).execute();
-                        }//else
-                    }
-                });
-                builder.setNegativeButton("CANCELAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("¿DDESEA TERMINAR CON ESTE CÓDIGO").create().show();
-
+                                    finalCant, finalMaxi, finalComen).execute();
+                        }
+                    });
+                    builder.setNegativeButton("CANCELAR",null);
+                    builder.setCancelable(false);
+                    builder.setTitle("AVISO").setMessage("¿DESEA TERMINAR CON ESTE CÓDIGO").create().show();
+                }//else
             }//onclcik
         });//
 
