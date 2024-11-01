@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.almacen.alamacen202.Activity.ActivityAjusteUbi;
 import com.almacen.alamacen202.Activity.ActivityConsultaPA;
 import com.almacen.alamacen202.Activity.ActivityDifUbiExi;
 import com.almacen.alamacen202.Activity.ActivityEnvTraspMultSuc;
@@ -366,6 +367,9 @@ public class ActivityMenu extends AppCompatActivity {
     }//reporte de etiquetas
     public void envRecepTrasp(View v){
         startActivity(new Intent(ActivityMenu.this, ActivityEnvTraspMultSuc.class));
+    }
+    public void ajusteUbi(View v){
+        startActivity(new Intent(ActivityMenu.this, ActivityAjusteUbi.class));
     }
 
 
