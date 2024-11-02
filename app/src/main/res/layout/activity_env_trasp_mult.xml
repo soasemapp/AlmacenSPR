@@ -586,7 +586,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
                     android:layout_gravity="center"
-                    android:background="@drawable/btn_background4"
+                    android:background="@drawable/btn_background1"
                     android:text="@string/buscar"
                     android:textSize="10dp"
                     android:maxLines="2"

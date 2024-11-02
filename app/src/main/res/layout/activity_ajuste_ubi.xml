@@ -74,6 +74,73 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/existencia"
+                    android:textColorHint="@color/AzulBack"
+                    app:hintTextColor="@color/AzulBack"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:boxBackgroundColor="@color/ColorWhite"
+                    app:boxStrokeColor="@color/colorPrimary"
+                    android:layout_marginRight="2dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtExist"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:inputType="phone"
+                        android:digits="0123456789"
+                        android:maxLines="1"
+                        android:maxLength="5"
+                        android:textStyle="bold"
+                        android:textSize="15dp"
+                        android:textColor="@color/colorRed"
+                        android:imeOptions="actionDone"
+                        android:enabled="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:hint="TOTAL UBICACIONES"
+                    android:textColorHint="@color/colorVerdeAzul"
+                    app:boxBackgroundColor="@color/ColorWhite"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:boxStrokeColor="@color/colorPrimary"
+                    app:hintTextColor="@color/colorRed">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtTotUbi"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:enabled="false"
+                        android:inputType="phone"
+                        android:digits="0123456789"
+                        android:maxLength="5"
+                        android:maxLines="1"
+                        android:textColor="@color/AzulBack"
+                        android:textSize="15dp"
+                        android:imeOptions="actionDone"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:layout_marginTop="10dp">
@@ -113,7 +180,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="1.8"
                         android:gravity="center"
                         android:textStyle="bold"
                         android:textSize="10dp"
@@ -245,7 +312,8 @@
                     app:iconSize="20dp"
                     android:layout_gravity="center_vertical"
                     app:backgroundTint="@null"
-                    android:enabled="false"/>
+                    android:enabled="false"
+                    android:visibility="gone"/>
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
