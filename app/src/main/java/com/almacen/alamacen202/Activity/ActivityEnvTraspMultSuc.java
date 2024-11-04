@@ -421,6 +421,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(primeroSinc()==false){
+                    new AsyncConsulEnvTrasp(strbran,Folio,Linea).execute();
                     ArrayList<Ubicaciones> listaubixprod= new ArrayList<>();
                     boolean bandera=false;
                     String p=tvProd.getText().toString();
@@ -847,13 +848,14 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         posX=scrollView.getScrollX();
         posY=scrollView.getScrollY();
         posicion=pos;
-        int exi=Integer.parseInt(lista.get(pos).getExistencia());
-        int cant=Integer.parseInt(lista.get(pos).getCantidad());
-        int cantS = Integer.parseInt(lista.get(pos).getCantSurt());
-        int cantSinc=Integer.parseInt(lista.get(pos).getCantSinc());
+        int exi=Integer.parseInt(lista.get(pos).getExistencia());//CANTIDAD QUE DEBERIA SER POR UBICACION
+        int cant=Integer.parseInt(lista.get(pos).getCantidad());//CANTIDAD QUE DEBERIA SER EN TOTAL
+        int cantS = Integer.parseInt(lista.get(pos).getCantSurt());//LO QUE SE VA SURTIENDO
+        int cantSinc=Integer.parseInt(lista.get(pos).getCantSinc());//CANTIDAD QUE YA ESTA SINCRONIZADA
+        int disp=Integer.parseInt(lista.get(pos).getDisponible());//EXISTENCIA EN UBICACION
 
-        if(cantSinc+(cantS+1)<=cant){//SI SE PUEDE SUMAR SIN SOBREPASAR CANTIDAD
-            if(exi<(cantS+1)+cantSinc){//SI EXISTENCIA ES MENOR A CANTIDAD SURTIDA
+        if(cantSinc+(cantS+1)<=exi){//SI SE PUEDE SUMAR SIN SOBREPASAR CANTIDAD
+            if(disp<(cantS+1)+cantSinc){//SI NO HUBIERA SUFICIENTES EN EXISTENCIA
                 bepp.play(sonido_error, 1, 1, 1, 0, 0);
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
                 builder.setPositiveButton("ACEPTAR",null);
@@ -864,31 +866,16 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 lista.get(pos).setCantSurt(cantS+"");
                 lista.get(pos).setSincronizado(false);
                 adapter.setSingleSelection(pos);
-                if(cantSinc+cantS ==cant){//CUANDO SE COMPLETE LA CANTIDAD
-                    posG=pos;
-                    new AsyncInsertCajasE(prod, cantS +"",spCaja.getText().toString(),
-                            lista.get(pos).getPartida(),"change").execute();
-                }else{
-                    int totSur=Integer.parseInt(lista.get(pos).getCantSinc())+
-                            Integer.parseInt(lista.get(pos).getCantSurt());
-                    txtCantSurt.setText(totSur+"");
-                    if(cant==totSur){
-                        txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorSelec)));
-                    }else{
-                        txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorRed)));
-                    }
-                    txtTotPza.setText(totPazas()+"");
-                    rvEnvTrasp.smoothScrollBy(x,y);
-                    scrollView.smoothScrollTo(posX,posY);
-                    //mostrarDetalleProd();
-                }//else
+                posG=pos;
+                new AsyncInsertCajasE(prod, cantS +"",spCaja.getText().toString(),
+                        lista.get(pos).getPartida(),"change").execute();
             }//else
             txtProducto.requestFocus();
         }else{
             bepp.play(sonido_error, 1, 1, 1, 0, 0);
             AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
             builder.setTitle("AVISO");
-            builder.setMessage("Excede cantidad");
+            builder.setMessage("Excede cantidad por ubicación");
             builder.setCancelable(false);
             builder.setNegativeButton("OK",null);
             AlertDialog dialog = builder.create();
@@ -1179,12 +1166,13 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                             cants=dato.getString("k_cants");
                             env=dato.getString("k_env");
                             linea=dato.getString("k_linea");
-                            disp=dato.getString("k_exiub");
+
                             JSONArray jsonUbi=dato.getJSONArray("ubicaciones");
                             for(int k=0;k<jsonUbi.length();k++){
                                 JSONObject dato2=jsonUbi.getJSONObject(k);
                                 ubi=dato2.getString("k_ubi");
                                 exist=dato2.getString("k_exist");
+                                disp=dato2.getString("k_exiub");
                                 lista.add(new EnvTraspasos(num+"",prod,ubi,disp,exist,cant,part,cants,"0",env,linea, true));
                                 cont++;
                             }//for k

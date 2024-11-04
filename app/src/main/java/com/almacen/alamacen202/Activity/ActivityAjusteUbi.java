@@ -143,7 +143,7 @@ public class ActivityAjusteUbi extends AppCompatActivity {
                 String maxi=txtMaxi.getText().toString();
                 String comen=txtComentario.getText().toString();
                 cant=cant.trim();maxi=maxi.trim();comen=comen.trim();
-                if(cant.isEmpty() || maxi.isEmpty() || comen.isEmpty()){//para que cant y mai no esten vacios
+                if(cant.isEmpty() || maxi.isEmpty()){//para que cant y mai no esten vacios
                     Toast.makeText(ActivityAjusteUbi.this, "Campos Vacios", Toast.LENGTH_SHORT).show();
                 }else{//sino hay campos vacios
                     String finalMaxi = maxi,finalComen = comen;String finalCant= cant;
