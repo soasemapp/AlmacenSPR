@@ -431,7 +431,7 @@
                 android:text="@string/guardar"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:background="@drawable/btn_background2"
-                app:backgroundTint="@color/ColorGris"
+                app:backgroundTint="@null"
                 android:enabled="false"
                 android:textColor="@color/ColorWhite"
                 android:layout_marginTop="10dp"

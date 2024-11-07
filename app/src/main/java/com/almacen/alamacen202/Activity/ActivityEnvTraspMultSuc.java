@@ -182,7 +182,8 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         sonido_correcto = bepp.load(ActivityEnvTraspMultSuc.this, R.raw.sonido_correct, 1);
         sonido_error = bepp.load(ActivityEnvTraspMultSuc.this, R.raw.error, 1);
 
-
+        txtFolBusq.requestFocus();
+        txtProducto.setInputType(InputType.TYPE_NULL);
 
         CAJAACT=1;
 
@@ -502,8 +503,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());*/
 
-        txtFolBusq.requestFocus();
-        txtProducto.setInputType(InputType.TYPE_NULL);
     }//onCreate
 
     public void alertBusca(){
