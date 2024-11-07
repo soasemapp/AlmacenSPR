@@ -626,7 +626,7 @@ public class ActivityTrasladoUbi extends AppCompatActivity {
                         case "sprautomotive.servehttp.com:9095":
 
                             Picasso.with(getApplicationContext()).
-                                    load(R.drawable.shark)
+                                    load(R.drawable.partech)
                                     .error(R.drawable.logokepler)
                                     .fit()
                                     .centerInside()
@@ -637,7 +637,7 @@ public class ActivityTrasladoUbi extends AppCompatActivity {
 
 
                             Picasso.with(getApplicationContext()).
-                                    load(R.drawable.partech)
+                                    load(R.drawable.shark)
                                     .error(R.drawable.logokepler)
                                     .fit()
                                     .centerInside()
