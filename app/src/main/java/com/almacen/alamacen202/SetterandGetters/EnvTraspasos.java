@@ -4,7 +4,6 @@ public class EnvTraspasos {
     private String num;
     private String producto;
     private String ubic;
-    private String disponible;
     private String existencia;
     private String cantidad;
     private String partida;
@@ -14,13 +13,12 @@ public class EnvTraspasos {
     private String linea;
     boolean sincronizado;
 
-    public EnvTraspasos(String num, String producto, String ubic, String disponible,
-                        String existencia, String cantidad, String partida, String cantSinc,
-                        String cantSurt, String almEnv, String linea, boolean sincronizado) {
+    public EnvTraspasos(String num, String producto, String ubic, String existencia,
+                        String cantidad, String partida, String cantSinc, String cantSurt,
+                        String almEnv, String linea, boolean sincronizado) {
         this.num = num;
         this.producto = producto;
         this.ubic = ubic;
-        this.disponible = disponible;
         this.existencia = existencia;
         this.cantidad = cantidad;
         this.partida = partida;
@@ -53,14 +51,6 @@ public class EnvTraspasos {
 
     public void setUbic(String ubic) {
         this.ubic = ubic;
-    }
-
-    public String getDisponible() {
-        return disponible;
-    }
-
-    public void setDisponible(String disponible) {
-        this.disponible = disponible;
     }
 
     public String getExistencia() {

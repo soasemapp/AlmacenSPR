@@ -144,6 +144,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setCancelable(false);
 
+
         txtFolBusq    = findViewById(R.id.txtFolBusq);
         txtCantidad = findViewById(R.id.txtCantidad);
         txtCantSurt = findViewById(R.id.txtCantSurt);

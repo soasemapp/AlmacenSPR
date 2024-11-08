@@ -37,13 +37,14 @@ public class AdaptadorEnvTraspasos extends RecyclerView.Adapter<AdaptadorEnvTras
         holder.n.setText(datos.get(position).getNum());
         holder.tvItemP.setText(datos.get(position).getProducto());
         holder.tvItemU.setText(datos.get(position).getUbic());
-        holder.tvItemC.setText(datos.get(position).getExistencia());//AQUI SE TRAE LO QUE DEBERIA SER POR UBICACION
-        holder.tvItemE.setText(datos.get(position).getDisponible());//MOSTRAR EXISTENCIA DE LA UBICACION
+        holder.tvItemC.setText(datos.get(position).getCantidad());
+        holder.tvItemE.setText(datos.get(position).getExistencia());
         holder.tvItemS.setText(totSurt+"");
+
 
         if(index==position){
             holder.lyaoutEnv.setBackgroundResource(R.color.colorSelec);//seleccion
-            if(!datos.get(position).isSincronizado()){//cuando se este surtiendo sin sincronizar
+            if(datos.get(position).isSincronizado()==false){//cuando se este surtiendo sin sincronizar
                 holder.n.setTextColor(Color.parseColor("#223CCA"));
                 holder.tvItemP.setTextColor(Color.parseColor("#223CCA"));
                 holder.tvItemU.setTextColor(Color.parseColor("#223CCA"));
