@@ -35,22 +35,26 @@ public class AdaptadorTraspasos extends RecyclerView.Adapter<AdaptadorTraspasos.
         holder.Producto.setText(datos.get(position).getProducto());
         holder.Cantidad.setText(datos.get(position).getCantidad());
         holder.n.setText(datos.get(position).getNum());
-        holder.CantSurt.setText(datos.get(position).getCantSurt());
+
         holder.ubi.setText(datos.get(position).getUbic());
         holder.itExist.setText(datos.get(position).getExist());
 
+        int totSurt=Integer.parseInt(datos.get(position).getCantSurt())+
+                Integer.parseInt(datos.get(position).getCantSinc());
+
+        holder.CantSurt.setText(totSurt+"");
+
         if(index==position){
             holder.lyaout.setBackgroundResource(R.color.colorSelec);//seleccion
-            if(Integer.parseInt(datos.get(position).getCantSurt())>0 &&
-                    Integer.parseInt(datos.get(position).getCantSurt())==
-                            Integer.parseInt(datos.get(position).getCantidad())){
+            if(totSurt>0 && totSurt== Integer.parseInt(datos.get(position).getCantidad()) &&
+                    datos.get(position).isSincronizado()){
                 holder.Producto.setTextColor(Color.parseColor("#32997C"));
                 holder.Cantidad.setTextColor(Color.parseColor("#32997C"));
                 holder.n.setTextColor(Color.parseColor("#32997C"));
                 holder.CantSurt.setTextColor(Color.parseColor("#32997C"));
                 holder.ubi.setTextColor(Color.parseColor("#32997C"));
                 holder.itExist.setTextColor(Color.parseColor("#32997C"));
-            }else if(datos.get(position).isSincronizado()==false){
+            }else if(!datos.get(position).isSincronizado()){
                 holder.Producto.setTextColor(Color.parseColor("#223CCA"));
                 holder.Cantidad.setTextColor(Color.parseColor("#223CCA"));
                 holder.n.setTextColor(Color.parseColor("#223CCA"));
@@ -66,9 +70,8 @@ public class AdaptadorTraspasos extends RecyclerView.Adapter<AdaptadorTraspasos.
                 holder.itExist.setTextColor(Color.parseColor("#1E739A"));
             }//else si ya se termino de escanear
         }else{
-            if(Integer.parseInt(datos.get(position).getCantSurt())>0 &&
-                    Integer.parseInt(datos.get(position).getCantSurt())==
-                            Integer.parseInt(datos.get(position).getCantidad())){
+            if(totSurt>0 && totSurt== Integer.parseInt(datos.get(position).getCantidad()) &&
+                    datos.get(position).isSincronizado()){
                 holder.lyaout.setBackgroundResource(R.color.ColorSinc);
             }else{
                 holder.lyaout.setBackgroundColor(0);

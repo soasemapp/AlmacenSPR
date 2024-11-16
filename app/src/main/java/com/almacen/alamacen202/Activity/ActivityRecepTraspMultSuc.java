@@ -44,6 +44,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -102,14 +103,14 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     private SharedPreferences preference;
     private SharedPreferences.Editor editor;
     private boolean datos = false, modificados = false;
-    private int posicion = 0, posicion2 = 0, posG = -1, CONTCAJA = 1, TOTCAJAS = 0, TOTP = 0, RECEP = 0;
+    private int posicion = 0, posG = -1, CONTCAJA = 1, TOTCAJAS = 0, TOTP = 0, RECEP = 0;
     private String strusr, strpass, strbran, strServer, codeBar, mensaje, Producto = "", serv, Folio = "", impresora;
     private ArrayList<Traspasos> listaTrasp = new ArrayList<>();
-    private EditText txtProd, txtCantidad, txtCantSurt, txtFolBusq, txtTotPza, txtUbicT;
+    private EditText txtProd, txtCantidad, txtCantSurt, txtFolBusq, txtTotPza, txtUbicT,txtCantSinc;
     private AutoCompleteTextView spCaja;
     private ImageView ivProd;
     private TextView tvProd;
-    private Button btnBuscar, btnAtras, btnAdelante, btnCorr, btnBackC, btnNextC, btnImpr;
+    private Button btnBuscar, btnAtras, btnAdelante, btnCorr, btnBackC, btnNextC, btnImpr,btnBusc;
     private RecyclerView rvTraspasos;
     private AdaptadorTraspasos adapter;
     private AlertDialog mDialog;
@@ -118,8 +119,10 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     private int sonido_correcto, sonido_error;
     private SoundPool bepp;
     Context context = this;
+    private Intent dwIntent;
     AlertDialog dialog6 = null;
     AlertDialog.Builder builder6;
+    private AlertDialog alertDialog=null;
     @RequiresApi(api = Build.VERSION_CODES.M)
 
 
@@ -179,6 +182,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         txtTotPza = findViewById(R.id.txtTotPza);
         txtUbicT = findViewById(R.id.txtUbicT);
         btnImpr = findViewById(R.id.btnImpr);
+        btnBusc=findViewById(R.id.btnBusc);
+        txtCantSinc = findViewById(R.id.txtCantSinc);
 
         bepp = new SoundPool(1, AudioManager.STREAM_MUSIC, 1);
         sonido_correcto = bepp.load(ActivityRecepTraspMultSuc.this, R.raw.sonido_correct, 1);
@@ -208,8 +213,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                     if (codeBar.equals("Zebra")) {
                         Producto = Producto.trim();
                         Producto = Producto.replaceAll("(\n|\r)", "");
-                        posicion2 = posG;
-                        cambio(Producto, true);
+                        accionEscanea(Producto);
                         txtProd.setText("");
                         txtProd.requestFocus();
                     } else {
@@ -217,8 +221,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                             char ban;
                             ban = editable.charAt(i);
                             if (ban == '\n') {
-                                posicion2 = posG;
-                                cambio(Producto, true);
+                                accionEscanea(Producto);
                                 txtProd.setText("");
                                 break;
                             }//if
@@ -257,7 +260,6 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         btnAdelante.setOnClickListener(new View.OnClickListener() {//boton adelante
             @Override
             public void onClick(View view) {
-                posicion2 = posicion;
                 cambio("next", false);
             }//onclick
         });//btnadelante setonclicklistener
@@ -265,7 +267,6 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         btnAtras.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                posicion2 = posicion;
                 cambio("back", false);
             }//onclick
         });//btnatras setonclicklistener
@@ -274,7 +275,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (listaTrasp.get(posicion).isSincronizado() == false) {
-                    posicion2 = posicion;
+                    posG = posicion;
                     new AsyncActualizar(Folio, listaTrasp.get(posicion).getProducto(),
                             listaTrasp.get(posicion).getCantSurt() + "",
                             "change", false, Producto, 0).execute();
@@ -289,7 +290,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (listaTrasp.size() > 0 && listaTrasp.get(posicion).isSincronizado() == false) {
-                    posicion2 = posicion;
+                    posG = posicion;
                     new AsyncActualizar(Folio, listaTrasp.get(posicion).getProducto(),
                             listaTrasp.get(posicion).getCantSurt() + "",
                             "change", false, Producto, 0).execute();
@@ -303,8 +304,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         btnNextC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (listaTrasp.size() > 0 && listaTrasp.get(posicion).isSincronizado() == false) {
-                    posicion2 = posicion;
+                if (!listaTrasp.isEmpty() && !listaTrasp.get(posicion).isSincronizado()) {
+                    posG = posicion;
                     new AsyncActualizar(Folio, listaTrasp.get(posicion).getProducto(),
                             listaTrasp.get(posicion).getCantSurt() + "",
                             "change", false, Producto, 0).execute();
@@ -325,12 +326,26 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             }
         });
 
+        btnBusc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!listaTrasp.isEmpty() && !listaTrasp.get(posG).isSincronizado()) {
+                    posG=posicion;
+                    new AsyncActualizar(Folio, listaTrasp.get(posG).getProducto(),
+                            listaTrasp.get(posG).getCantSurt(), "change",
+                            false, listaTrasp.get(posG).getProducto(), 0).execute();
+                } else {
+                    alertBusca();
+                }//else
+            }
+        });
+
         btnImpr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (listaTrasp.size() > 0) {//si hay datos para imprimir
                     if (listaTrasp.get(posicion).isSincronizado() == false) {
-                        posicion2 = posicion;
+                        posG = posicion;
                         new AsyncActualizar(Folio, listaTrasp.get(posicion).getProducto(),
                                 listaTrasp.get(posicion).getCantSurt() + "",
                                 "change", false, Producto, 0).execute();
@@ -345,6 +360,9 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 }//else
             }//onclick
         });
+
+        dwIntent = new Intent();
+        txtFolBusq.requestFocus();
 
         //PERMISOS PARA BLUETOOTH SOLO SE MUESTRA EN VERSIONES POSTERIORES DE ANDROID 13
         /*ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.BLUETOOTH_CONNECT},
@@ -416,7 +434,6 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         if (posicion == 0 && listaTrasp.size() > 1) {
             btnAdelante.setEnabled(true);
             btnAtras.setEnabled(false);
-
         } else if (posicion + 1 == listaTrasp.size() && listaTrasp.size() > 1) {
             btnAtras.setEnabled(true);
             btnAdelante.setEnabled(false);
@@ -430,28 +447,20 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     }//cambiaProd
 
     public void onClickLista(View v) {//cada vez que se seleccione un producto en la lista
-        if (posicion >= 0 && listaTrasp.get(posicion).isSincronizado() == false) {
-            posicion2 = posG;
-            Producto = listaTrasp.get(rvTraspasos.getChildPosition(rvTraspasos.findContainingItemView(v))).getProducto();
-        } else {
-            posicion2 = rvTraspasos.getChildPosition(rvTraspasos.findContainingItemView(v));
-        }
+        posicion=rvTraspasos.getChildPosition(rvTraspasos.findContainingItemView(v));
         cambio("change", false);
     }//onClickLista
 
 
     public void cambio(String var, boolean sumar) {
-        if (!listaTrasp.get(posicion2).getProducto().equals(Producto) && posG != -1 && listaTrasp.get(posicion2).isSincronizado() == false) {//identificando que prod anterior no se sincronizó
-            //new AsyncAct(listaTrasp.get(posicion2).getProducto(),listaTrasp.get(posicion2).getCantSurt(),var,sumar,Producto).execute();
-            new AsyncActualizar(Folio, listaTrasp.get(posicion2).getProducto(),
-                    listaTrasp.get(posicion2).getCantSurt(), var, sumar, Producto, 0).execute();
-        } else {//cuando se escanea o por botones de adelante, atras y onclick en lista
-            if (sumar == true) {//al escanear
-                evaluarEscaneo(Producto);
-            } else {
-                tipoCambio(var);
-                mostrarDetalleProd();
-            }
+        if (!listaTrasp.get(posG).isSincronizado()) {//identificando que prod anterior no se sincronizó
+            new AsyncActualizar(Folio, listaTrasp.get(posG).getProducto(),
+                    listaTrasp.get(posG).getCantSurt(), var, sumar, listaTrasp.get(posG).getProducto(), 0).execute();
+        }else {//cuando se escanea o por botones de adelante, atras y onclick en lista
+            posG=posicion;
+            tipoCambio(var);
+            Producto=listaTrasp.get(posicion).getProducto();
+            buscar(Producto,sumar);
         }//else
     }//alert
 
@@ -464,8 +473,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 posicion--;
                 break;
             case "change":
-                posicion = posicion2;
-                posicion2 = 0;
+                posicion = posG;
+                posG = -1;
                 break;
             default:
                 posicion = encontrarPosEnLista(var);
@@ -476,7 +485,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     public int totPazas() {
         int tot = 0;
         for (int i = 0; i < listaTrasp.size(); i++) {
-            if (listaTrasp.get(i).isSincronizado() == true) {
+            if (listaTrasp.get(i).isSincronizado()) {
                 tot = tot + Integer.parseInt(listaTrasp.get(i).getCantSurt());
             }
         }
@@ -490,11 +499,14 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         //Producto=listaTrasp.get(posicion).getProducto();
         tvProd.setText(listaTrasp.get(posicion).getProducto());
         txtCantidad.setText(listaTrasp.get(posicion).getCantidad());
-        int surtReal=Integer.parseInt(listaTrasp.get(posicion).getCantSinc())+
-                Integer.parseInt(listaTrasp.get(posicion).getCantSurt());
-        txtCantSurt.setText(surtReal+"");
+        txtCantSinc.setText(listaTrasp.get(posicion).getCantSinc());
+
+        txtCantSurt.setText(listaTrasp.get(posicion).getCantSurt());
         txtTotPza.setText(totPazas() + "");
         txtUbicT.setText(listaTrasp.get(posicion).getUbic());
+
+        int surtReal=Integer.parseInt(listaTrasp.get(posicion).getCantSinc())+
+                Integer.parseInt(listaTrasp.get(posicion).getCantSurt());
 
         Picasso.with(getApplicationContext()).
                 load(urlImagenes +
@@ -503,14 +515,14 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 .fit()
                 .centerInside()
                 .into(ivProd);
+        txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorBlack)));
         if (Integer.parseInt(listaTrasp.get(posicion).getCantidad()) == surtReal) {
-            txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
-        } else {
-            txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorBlack)));
+            txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorVerdeAzul)));
         }
         cambiaProd();
 
         if (!txtCantSurt.getText().toString().equals("") && Integer.parseInt(txtCantSurt.getText().toString()) > 0) {
+            txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorAzz)));
             btnCorr.setEnabled(true);
         } else {
             btnCorr.setEnabled(false);
@@ -525,9 +537,11 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         ivProd.setImageResource(R.drawable.logokepler);
         txtTotPza.setText("");
         txtUbicT.setText("");
+        txtCantSinc.setText("");
         btnAtras.setEnabled(false);
         btnAdelante.setEnabled(false);
         btnCorr.setEnabled(false);
+        btnBusc.setEnabled(false);
         posG = -1;
     }//limpiar
 
@@ -540,47 +554,134 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             }//if
         }
         return p;
-    }
+    }//encontrarposenlista
 
-    public void evaluarEscaneo(String prod) {
-        limpiar();
-        boolean existe = false;
-        for (int i = 0; i < listaTrasp.size(); i++) {
-            if (listaTrasp.get(i).getProducto().equals(prod)) {
-                posicion = i;
-                existe = true;
-                int cant = Integer.parseInt(listaTrasp.get(i).getCantidad());
-                int recep=Integer.parseInt(listaTrasp.get(i).getCantSinc());//cantidad de ya escaneados
-                int cantS=Integer.parseInt(listaTrasp.get(i).getCantSurt());
-                if (recep+(cantS+1)<=cant) {
-                    cantS++;
-                    listaTrasp.get(i).setCantSurt(cantS + "");
-                    listaTrasp.get(i).setSincronizado(false);
-                    RECEP++;
-                    modificados = true;
-                    if ((recep+cantS)==cant) {
-                        posicion2 = i;
-                        new AsyncActualizar(Folio, prod, cantS + "", "change", false, Producto, 1).execute();
-                    }
-                } else {
-                    bepp.play(sonido_error, 1, 1, 1, 0, 0);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
-                    builder.setPositiveButton("ACEPTAR", null);
-                    builder.setCancelable(false);
-                    builder.setTitle("Excede cantidad").create().show();
-                }
-                break;
-            }//if
-        }
-        if (existe == false) {
+    public void accionEscanea(String prod){
+        if(tvProd.getText().toString().equals(prod)){//CUANDO ES EL MISMO CODIGO Y NO SE TIENE QUE BUSCAR
+            actualizaDat(posicion,prod);
+        }else{//
+            /*bepp.play(sonido_error, 1, 1, 1, 0, 0);
+            AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+            builder.setTitle("AVISO");
+            builder.setMessage("Escaneo de un producto diferente al actual, debe seleccionar el producto para escanearlo");
+            builder.setCancelable(false);
+            builder.setNegativeButton("OK",null);
+            AlertDialog dialog = builder.create();
+            dialog.show();*/
+
+            if (!listaTrasp.get(posG).isSincronizado()) {//identificando que prod anterior no se sincronizó
+                new AsyncActualizar(Folio, listaTrasp.get(posG).getProducto(),
+                        listaTrasp.get(posG).getCantSurt(), "change", true, Producto, 0).execute();
+            } else {//cuando se escanea o por botones de adelante, atras y onclick en lista
+                Producto=prod;
+                buscar(Producto,true);
+            }//else
+        }//else
+    }//accionEscanea
+
+    public void actualizaDat(int pos,String prod){
+        dwIntent.putExtra("com.symbol.datawedge.api.SCANNER_INPUT_PLUGIN", "DISABLE_PLUGIN");
+        sendBroadcast(dwIntent);
+        posicion=pos;
+
+        int cant = Integer.parseInt(listaTrasp.get(pos).getCantidad());
+        int recep=Integer.parseInt(listaTrasp.get(pos).getCantSinc());//cantidad de ya escaneados
+        int cantS=Integer.parseInt(listaTrasp.get(pos).getCantSurt());
+        if (recep+(cantS+1)<=cant) {
+            cantS++;
+            RECEP++;
+            modificados = true;
+            listaTrasp.get(pos).setCantSurt(cantS + "");
+            listaTrasp.get(pos).setSincronizado(false);
+            mostrarDetalleProd();
+            if ((recep+cantS)==cant) {
+                posG = pos;
+                new AsyncActualizar(Folio, prod, cantS + "", "change", false, Producto, 1).execute();
+            }
+        } else {
+            posicion=pos;
+            mostrarDetalleProd();
             bepp.play(sonido_error, 1, 1, 1, 0, 0);
             AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
-            builder.setPositiveButton("ACEPTAR", null);
+            builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dwIntent.putExtra("com.symbol.datawedge.api.SCANNER_INPUT_PLUGIN", "ENABLE_PLUGIN");
+                    sendBroadcast(dwIntent);//HABILITAR ESCANER
+                }
+            });
             builder.setCancelable(false);
-            builder.setTitle("No existe " + prod + " en la lista").create().show();
+            builder.setTitle("Excede cantidad").create().show();
         }
-        mostrarDetalleProd();
+    }//actualizadat
+
+    public void buscar(String prod,boolean sumar){
+        boolean existe=false;
+        for(int i=0;i<listaTrasp.size();i++){
+            if(listaTrasp.get(i).getProducto().equals(prod)){
+                existe=true;
+                posicion=i;
+                posG=posicion;
+                if(alertDialog!=null && alertDialog.isShowing()){//para cerrar el alertde busqueda
+                    alertDialog.dismiss();
+                    btnBusc.setEnabled(true);
+                }
+                new AsyncRefrescarRecep(Folio,prod, spCaja.getText().toString(),sumar).execute();
+                break;
+            }//if
+        }//for
+        if(!existe){
+            bepp.play(sonido_error, 1, 1, 1, 0, 0);
+            AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+            builder.setTitle("AVISO");
+            builder.setMessage("No existe "+prod+" en la lista");
+            builder.setCancelable(false);
+            builder.setNegativeButton("OK",null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
     }//evaluar
+
+    public void alertBusca(){
+        btnBusc.setEnabled(false);
+        AlertDialog.Builder alert = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+        LayoutInflater inflater = ActivityRecepTraspMultSuc.this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_buscprod, null);
+        alert.setView(dialogView);
+        TextView tvTit = dialogView.findViewById(R.id.tvTit);
+        EditText txtBuscaP = dialogView.findViewById(R.id.txtBuscaP);
+        ListView lvBus = dialogView.findViewById(R.id.lvBus);
+        Button btnB = dialogView.findViewById(R.id.btnB);
+        tvTit.setText("Buscar Producto");
+
+        btnB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                lvBus.setVisibility(View.GONE);
+                if(!txtBuscaP.getText().toString().equals("")){
+                    String comparar=txtBuscaP.getText().toString().trim();
+                    buscar(comparar,false);
+                }else{
+                    Toast.makeText(ActivityRecepTraspMultSuc.this, "Campo Vacío", Toast.LENGTH_SHORT).show();
+                }//else
+            }//onclick
+        });//btnB
+
+        alert.setCancelable(false);
+        alert.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                keyboard.hideSoftInputFromWindow(txtBuscaP.getWindowToken(), 0);
+                btnBusc.setEnabled(true);
+                txtProd.requestFocus();
+                alertDialog=null;
+            }
+        });//cerrar
+
+        alertDialog = alert.create();
+        alertDialog.show();
+        txtBuscaP.requestFocus();
+    }//alertBusca
 
     public boolean surtTodos() {
         boolean surt = false;
@@ -606,6 +707,11 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         txtProd.setEnabled(true);
         txtProd.requestFocus();
         posicion = 0;
+        btnBusc.setEnabled(true);
+        if(posicion>=listaTrasp.size()){
+            posicion=listaTrasp.size()-1;
+            btnBusc.setEnabled(false);
+        }
         mostrarDetalleProd();
     }//ver lista
 
@@ -791,9 +897,93 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         }//onPost
     }//AsyncConsulRecep
 
+    private class AsyncRefrescarRecep extends AsyncTask<Void, Void, Void> {
+
+        private String folio, producto,caja,existencia,cantNueva;
+        private boolean conn,sumar;
+
+        public AsyncRefrescarRecep(String folio, String producto, String caja,boolean sumar) {
+            this.folio = folio;
+            this.producto = producto;
+            this.caja = caja;
+            this.sumar=sumar;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (!mDialog.isShowing()) {
+                mDialog.show();
+            }
+        }//onPreExecute
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            conn = firtMet();
+            if (conn == true) {
+                HttpHandler sh = new HttpHandler();
+                String parametros = "sucursal=" + strbran + "&folio="+folio+
+                        "&producto="+producto+"&caja=" + caja;
+                String url = "http://" + strServer + "/RefrescarRecep?" + parametros;
+                String jsonStr = sh.makeServiceCall(url, strusr, strpass);
+                if (jsonStr != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(jsonStr);
+                        JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                        JSONObject dato = jsonArray.getJSONObject(0);//Conjunto de datos
+                        cantNueva=dato.getString("RECEPCION");
+                        existencia=dato.getString("EXISTENCIA");
+                        mensaje = "";
+                    } catch (final JSONException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mensaje = "Problema al consultar datos del código";
+                            }//run
+                        });
+                    }//catch JSON EXCEPTION
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mensaje = "No fue posible obtener datos del servidor";
+                        }//run
+                    });//runUniTthread
+                }//else
+                return null;
+            } else {
+                mensaje = "Problemas de conexión";
+                return null;
+            }
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(Void aBoolean) {
+            super.onPostExecute(aBoolean);
+            if (mensaje.equals("")) {
+                mDialog.dismiss();
+                if(cantNueva.isEmpty()){cantNueva="0";}
+                if(existencia.isEmpty()){existencia="0";}
+                listaTrasp.get(posicion).setCantSinc(cantNueva);
+                listaTrasp.get(posicion).setExist(existencia);
+                if(sumar){
+                    actualizaDat(posicion,producto);
+                }else{
+                    mostrarDetalleProd();
+                }//else
+            } else {
+                mDialog.dismiss();
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                builder.setPositiveButton("ACEPTAR", null);
+                builder.setCancelable(false);
+                builder.setTitle("AVISO").setMessage(mensaje).create().show();
+            }//else
+        }//onPost
+    }//AsyncRefrescarRecep
+
     private class AsyncActualizar extends AsyncTask<Void, Void, Void> {
 
-        private String folio, producto, cantidad, var, ProductoActual;
+        private String folio, producto, cantidad, var, ProductoActual,newcant,aceptadas;
         private boolean conn = true, sumar;
         private int alTerm;
 
@@ -820,8 +1010,9 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             conn = firtMet();
             if (conn == true) {
                 String parametros = "sucursal=" + strbran + "&producto=" + producto +
-                        "&cantidad=" + cantidad + "&folio=" + folio + "&caja=" + spCaja.getText().toString();
-                String url = "http://" + strServer + "/recemul?" + parametros;
+                        "&cantidad=" + cantidad + "&folio=" + folio +
+                        "&caja=" + spCaja.getText().toString();
+                String url = "http://" + strServer + "/recepmult?" + parametros;
                 String jsonStr = new HttpHandler().makeServiceCall(url, strusr, strpass);
                 if (jsonStr != null) {
                     try {
@@ -829,6 +1020,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                         JSONArray jsonArray = jsonObj.getJSONArray("Response");
                         JSONObject dato = jsonArray.getJSONObject(0);
                         mensaje = dato.getString("MENSAJE");
+                        newcant = dato.getString("ACTUAL");
+                        aceptadas = dato.getString("ACEPTADAS");
                     } catch (final JSONException e) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -855,12 +1048,12 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aBoolean) {
             super.onPostExecute(aBoolean);
-            mDialog.dismiss();
-            if (conn == false) {
-                Toast.makeText(ActivityRecepTraspMultSuc.this, "Sin conexión a internet\n" +
-                        "No se podrá seguir escaneando a menos que se actualice este producto", Toast.LENGTH_SHORT).show();
-            } else if (mensaje.equals("SINCRONIZADO")) {
+            if (mensaje.equals("SINCRONIZADO")) {
+                mDialog.dismiss();
+                dwIntent.putExtra("com.symbol.datawedge.api.SCANNER_INPUT_PLUGIN", "ENABLE_PLUGIN");
+                sendBroadcast(dwIntent);//HABILITAR ESCANER
                 Toast.makeText(ActivityRecepTraspMultSuc.this, producto + " Sincronizado", Toast.LENGTH_SHORT).show();
+                RECEP++;
                 if (TOTP == RECEP) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
                     builder.setPositiveButton("ACEPTAR", null);
@@ -868,22 +1061,64 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                     builder.setTitle("HAS TERMINADO").create().show();
                 }
                 bepp.play(sonido_correcto, 1, 1, 1, 0, 0);
-                listaTrasp.get(posicion2).setSincronizado(true);
-                if (sumar == true) {
-                    evaluarEscaneo(ProductoActual);
+                listaTrasp.get(posG).setCantSinc(newcant);
+                listaTrasp.get(posG).setCantSurt("0");
+                listaTrasp.get(posG).setSincronizado(true);
+                if (sumar) {
+                    buscar(ProductoActual,true);
                 } else {
-                    if ((posicion + 1) < listaTrasp.size()) {//para que cambie al siguiente codigo siempre y cuando no sea el ultimo
+                    if ((posicion + 1) < listaTrasp.size() && var.equals("change")) {//para que cambie al siguiente codigo siempre y cuando no sea el ultimo
                         var = "next";
                     }//if
                     tipoCambio(var);
                     mostrarDetalleProd();
                     alTerminar(alTerm);
                 }
-            } else {
+            }else {
+                mDialog.dismiss();
+                posicion=posG;
+                bepp.play(sonido_error, 1, 1, 1, 0, 0);
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR", null);
+                String text="VOLVER A INTENTAR";
+                if(mensaje.equals("DIF")){
+                    if(Integer.parseInt(aceptadas)>0){//cuando sepueden escanear algunas
+                        mensaje="SOLO PUEDEN SINCRONIZAR  "+aceptadas+" PIEZAS ¿DESEA SINCRONIZAR "+aceptadas+"? ("+(Integer.parseInt(cantidad)-Integer.parseInt(aceptadas))+" NO SE REGISTRARÁN)";
+                        cantidad=aceptadas;
+                        text="SINCRONIZAR "+aceptadas;
+                    }else{//cuando ya no se puede escanear nada de las enviadas
+                        mensaje="LAS PIEZAS YA EXCEDEN LAS QUE DEBERIA HABER EN LA CAJA ¿DESEA REFRESCAR EL CÓDIGO?\n" +
+                                "("+cantidad+" PIEZAS NO SE SINCRONIZARÁN)";
+                        builder.setNeutralButton("REFRESCAR", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                listaTrasp.get(posG).setCantSurt("0");
+                                listaTrasp.get(posG).setSincronizado(true);
+                                new AsyncRefrescarRecep(folio,producto,spCaja.getText().toString(),sumar).execute();
+                            }
+                        });
+                    }
+                }else{
+                    mensaje=mensaje+"\n¿DESEA VOLVER A INTENTAR?";
+                }//else
+
+                builder.setPositiveButton(text, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new AsyncActualizar(folio,producto,cantidad,var,sumar,ProductoActual,0).execute();
+                    }
+                });
+                builder.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dwIntent.putExtra("com.symbol.datawedge.api.SCANNER_INPUT_PLUGIN", "ENABLE_PLUGIN");
+                        sendBroadcast(dwIntent);//HABILITAR ESCANER
+                        listaTrasp.get(posG).setCantSinc(newcant);
+                        mostrarDetalleProd();
+                    }
+                });
                 builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage(mensaje).create().show();
+                builder.setTitle("AVISO");
+                builder.setMessage(mensaje).create().show();
             }//else
         }//onPost
     }//AsyncActualizar
@@ -945,7 +1180,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         switch (id) {
             case R.id.itOtro:
                 if (listaTrasp.size() > 0 && listaTrasp.get(posicion).isSincronizado() == false) {
-                    posicion2 = posicion;
+                    posG = posicion;
                     new AsyncActualizar(Folio, listaTrasp.get(posicion).getProducto(),
                             listaTrasp.get(posicion).getCantSurt() + "",
                             "change", false, Producto, 2).execute();
@@ -1031,7 +1266,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             titulo.show();
         }//else
     }//imprimir
-    
+
     public void ImprimirTicketRec(int Cont) {
         BluetoothPrint imprimir = new BluetoothPrint(context, getResources());
         if (!impresora.equals("null")) {

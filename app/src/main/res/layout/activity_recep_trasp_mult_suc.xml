@@ -206,36 +206,57 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnImpr"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginRight="2dp"
-                    android:background="@drawable/btn_background1"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/btn_background3"
                     android:maxLines="1"
                     android:text="Imprimir"
-                    android:textAlignment="textStart"
                     android:textColor="@color/ColorWhite"
                     android:textSize="12dp"
                     app:icon="@drawable/icons8_puerta_abierta_impresora_48"
                     app:iconSize="18dp"
                     app:iconTint="@null"
                     app:iconGravity="start"
-                    app:backgroundTint="@null"/>
+                    app:backgroundTint="@null"
+                    tools:ignore="RtlCompat" />
             </LinearLayout>
 
-
-
-            <TextView
-                android:id="@+id/tvProd"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/Amarillo"
-                android:textSize="18dp"
-                android:textStyle="bold"
-                android:maxLines="2"
-                android:gravity="center_vertical"
-                android:layout_marginTop="5dp"/>
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp">
+                <TextView
+                    android:id="@+id/tvProd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/AzulBack"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:maxLines="2"
+                    android:gravity="center_vertical"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBusc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    android:layout_gravity="center"
+                    android:background="@drawable/btn_background2"
+                    android:text="@string/buscar"
+                    android:textSize="10dp"
+                    android:maxLines="2"
+                    android:textColor="@color/ColorWhite"
+                    app:icon="@drawable/icons8_lupa"
+                    app:iconGravity="end"
+                    app:iconTint="@null"
+                    app:iconSize="20dp"
+                    app:backgroundTint="@null"
+                    android:enabled="false"/>
+            </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -254,10 +275,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="10dp"
-                        android:hint="@string/cantidad"
-                        android:textColorHint="@color/AzulBack"
+                        android:hint="@string/CANTIDAD"
+                        android:textColorHint="@color/colorRed"
                         android:maxLines="1"
                         app:boxBackgroundMode="outline"
                         app:boxCornerRadiusTopEnd="10dp"
@@ -272,46 +291,82 @@
                             android:clickable="true"
                             android:maxLines="1"
                             android:textSize="13dp"
-                            android:textColor="@color/colorBlack"
+                            android:textStyle="bold"
+                            android:textColor="@color/colorRed"
                             android:enabled="false"/>
 
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="10dp"
-                        android:hint="Recepción"
-                        android:textColorHint="@color/AzulBack"
-                        app:hintTextColor="@color/AzulBack"
-                        app:boxBackgroundMode="outline"
-                        app:boxCornerRadiusTopEnd="10dp"
-                        app:boxCornerRadiusTopStart="10dp"
-                        app:startIconTint="@null"
-                        app:boxBackgroundColor="@color/ColorWhite"
-                        app:boxStrokeColor="@color/colorPrimary">
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/txtCantSurt"
+                        android:orientation="horizontal"
+                        android:layout_weight="1">
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:clickable="true"
-                            android:maxLength="5"
-                            android:maxLines="1"
-                            android:textColor="@color/colorBlack"
-                            android:textSize="13dp"
-                            android:enabled="false" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:layout_weight="1"
+                            android:hint="@string/recepcion"
+                            android:textColorHint="@color/colorVerdeAzul"
+                            app:hintTextColor="@color/AzulBack"
+                            app:boxBackgroundMode="outline"
+                            app:boxCornerRadiusTopEnd="10dp"
+                            app:boxCornerRadiusTopStart="10dp"
+                            app:startIconTint="@null"
+                            android:layout_marginRight="2.5dp"
+                            app:boxBackgroundColor="@color/ColorWhite"
+                            app:boxStrokeColor="@color/colorPrimary">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/txtCantSinc"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:clickable="true"
+                                android:maxLength="5"
+                                android:maxLines="1"
+                                android:textColor="@color/colorVerdeAzul"
+                                android:textSize="13dp"
+                                android:textStyle="bold"
+                                android:enabled="false" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="@string/escaneadas"
+                            android:textColorHint="@color/colorAzz"
+                            app:hintTextColor="@color/AzulBack"
+                            app:boxBackgroundMode="outline"
+                            app:boxCornerRadiusTopEnd="10dp"
+                            app:boxCornerRadiusTopStart="10dp"
+                            app:startIconTint="@null"
+                            android:layout_marginLeft="2.5dp"
+                            app:boxBackgroundColor="@color/ColorWhite"
+                            app:boxStrokeColor="@color/colorPrimary">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/txtCantSurt"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:clickable="true"
+                                android:maxLength="5"
+                                android:maxLines="1"
+                                android:textColor="@color/colorAzz"
+                                android:textSize="13dp"
+                                android:textStyle="bold"
+                                android:enabled="false" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="10dp"
                         android:hint="Ubicación"
                         android:textColorHint="@color/AzulBack"
                         app:boxBackgroundMode="outline"
@@ -328,6 +383,7 @@
                             android:maxLength="45"
                             android:maxLines="1"
                             android:textColor="@color/colorBlack"
+                            android:textStyle="bold"
                             android:textSize="13dp"
                             android:enabled="false" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -372,7 +428,7 @@
                     android:layout_height="match_parent"
                     android:layout_margin="3dp"
                     android:layout_weight="1.5"
-                    android:background="@drawable/btn_background2"
+                    android:background="@drawable/btn_background4"
                     android:maxLines="2"
                     android:text="Sincronizado Manual"
                     android:textAlignment="textStart"
@@ -494,6 +550,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/ColorGris"
+                    app:fastScrollEnabled="true"
+                    android:scrollbarSize="18dp"
+                    app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawable"
+                    app:fastScrollVerticalTrackDrawable="@drawable/line"
+                    app:fastScrollHorizontalThumbDrawable="@drawable/thumb_drawable"
+                    app:fastScrollHorizontalTrackDrawable="@drawable/line"
                     android:layout_marginBottom="10dp"/>
 
             </LinearLayout>
