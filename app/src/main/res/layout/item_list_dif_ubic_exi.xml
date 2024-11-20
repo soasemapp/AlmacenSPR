@@ -49,71 +49,7 @@
                 android:layout_width="2dp"
                 android:layout_height="match_parent"
                 android:background="@color/AzulBack"/>
-            <!--<TextView
-                android:id="@+id/tvC"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="CANT"
-                android:padding="5dp"
-                android:maxLines="1"
-                android:textColor="@color/Amarillo"
-                android:textStyle="bold"
-                android:textSize="10dp"
-                android:textAlignment="center"/>
-            <View
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="@color/AzulBack"/>
-            <TextView
-                android:id="@+id/tvE"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="EXIST"
-                android:padding="5dp"
-                android:maxLines="1"
-                android:textColor="@color/AzulBack"
-                android:textStyle="bold"
-                android:textSize="10dp"
-                android:textAlignment="center"/>
-            <View
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="@color/AzulBack"/>
-            <TextView
-                android:id="@+id/tvD"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="DIF"
-                android:padding="5dp"
-                android:maxLines="1"
-                android:textColor="@color/AzulBack"
-                android:textStyle="bold"
-                android:textSize="10dp"
-                android:textAlignment="center"/>
-            <View
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="@color/AzulBack"/>
-            <TextView
-                android:id="@+id/tvU"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.5"
-                android:text="UBIC"
-                android:textStyle="bold"
-                android:textSize="10dp"
-                android:padding="5dp"
-                android:textAlignment="center"
-                android:maxLines="3"
-                android:lines="3"
-                android:textColor="#000000"/>
-            <View
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="@color/AzulBack"/>-->
+
             <TextView
                 android:id="@+id/tvCC"
                 android:layout_width="match_parent"
@@ -126,6 +62,14 @@
                 android:textStyle="bold"
                 android:textSize="10dp"
                 android:textAlignment="center"/>
+            <ImageView
+                android:id="@+id/imSincro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:src="@drawable/icon_sincro"
+                android:background="@color/colorVerdeAzul"
+                android:visibility="gone"/>
         </LinearLayout>
         <View
             android:layout_width="match_parent"

@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -36,10 +37,6 @@ public class AdapterDifUbiExi extends RecyclerView.Adapter<AdapterDifUbiExi.View
     public void onBindViewHolder(AdapterDifUbiExi.ViewHolderDifUbiExist holder, int position) {
         holder.n.setText(datos.get(position).getNum());
         holder.tvP.setText(datos.get(position).getProducto());
-        /*holder.tvC.setText(datos.get(position).getCantidad());
-        holder.tvE.setText(datos.get(position).getExistencia());
-        holder.tvD.setText(datos.get(position).getDiferencia());
-        holder.tvU.setText(datos.get(position).getUbicacion());*/
         holder.tvCC.setText(datos.get(position).getConteo());
         if(index==position){
             holder.lyDif.setBackgroundResource(R.color.colorSelec);//seleccion
@@ -81,16 +78,14 @@ public class AdapterDifUbiExi extends RecyclerView.Adapter<AdapterDifUbiExi.View
     public static class ViewHolderDifUbiExist extends RecyclerView.ViewHolder {
         TextView n,tvP, tvC,tvE,tvD,tvU,tvCC;
         LinearLayout lyDif;
+        ImageView imSincro;
         public ViewHolderDifUbiExist (View itemView) {
             super(itemView);
             n= itemView.findViewById(R.id.tvN);
             tvP =  itemView.findViewById(R.id.tvP);
-            /*tvC =  itemView.findViewById(R.id.tvC);
-            tvE =  itemView.findViewById(R.id.tvE);
-            tvD =  itemView.findViewById(R.id.tvD);
-            tvU =  itemView.findViewById(R.id.tvU);*/
             tvCC =  itemView.findViewById(R.id.tvCC);
             lyDif = itemView.findViewById(R.id.lyDif);
+            imSincro = itemView.findViewById(R.id.imSincro);
         }//constructor
     }//AdapterSDifUbiExiViewHolder class
 }//principal

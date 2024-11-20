@@ -33,14 +33,6 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
             "ESTATUS INTEGER,"+//CONTADOS 1 NO CONTADOS 0
             "PRIMARY KEY(EMPRESA,PRODUCTO,UBICACION))";
 
-    final String CREAR_TABLA_RECEPCONT = "CREATE TABLE RECEPCONT(" +
-            "FOLIO VARCHAR (15)," +
-            "PRODUCTO VARCHAR (15)," +
-            "NAMEPALET VARCHAR(50)," +
-            "CANTIDAD INTEGER (11)," +
-            "PRIORIDAD VARCHAR (2),"+
-            "PRIMARY KEY(FOLIO,PRODUCTO,NAMEPALET))";
-
 
 
     public ConexionSQLiteHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
@@ -52,7 +44,6 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(CREAR_TABLA_INVENTARIOALM);
         db.execSQL(CREAR_TABLA_INVENTARIO);
         db.execSQL(CREAR_TABLA_DIFUBIEXIST);
-        db.execSQL(CREAR_TABLA_RECEPCONT);
 
     }//onCreate
 
@@ -61,7 +52,6 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS INVENTARIOALM");
         db.execSQL("DROP TABLE IF EXISTS INVENTARIO");
         db.execSQL("DROP TABLE IF EXISTS DIFUBIEXIST");
-        db.execSQL("DROP TABLE IF EXISTS RECEPCONT");
         onCreate(db);
     }//onUpgrade
 }

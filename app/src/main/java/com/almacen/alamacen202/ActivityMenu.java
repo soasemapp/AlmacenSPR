@@ -299,14 +299,10 @@ public class ActivityMenu extends AppCompatActivity {
 
     public void eliminarSqlySP() {//eliminar bd y shared preferences yani(true cuando tambien se incluya la de inventario)
         try{
-            SQLiteDatabase db = conn.getWritableDatabase();
-            db.delete("INVENTARIOALM",null,null);
-            db.delete("INVENTARIO",null,null);
-            db.delete("DIFUBIEXIST",null,null);
-            db.delete("RECEPCONT",null,null);
             editor2.clear().commit();
             editor3.clear().commit();
             editor4.clear().commit();
+            deleteDatabase("bd_INVENTARIO");
         }catch(Exception e){}
     }//eliminarSql
 
@@ -431,7 +427,6 @@ public class ActivityMenu extends AppCompatActivity {
                         editor.clear();
                         editor.commit();
                         eliminarSqlySP();
-                        getApplicationContext().deleteDatabase("bd_INVENTARIO");
                         Intent cerrar = new Intent(ActivityMenu.this, MainActivity.class);
                         startActivity(cerrar);
                         System.exit(0);
