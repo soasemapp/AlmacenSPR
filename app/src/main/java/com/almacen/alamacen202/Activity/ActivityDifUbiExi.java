@@ -248,25 +248,27 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                     txtProductoVi.setText(ProductoAct);
                     if (codeBar.equals("Zebra")) {//codebar
                         if (!chbMan.isChecked()) {//normal
-                            buscarXprod(ProductoAct,"1",txtUbb.getText().toString(),true);
+                            buscarXprod(ProductoAct,"1",true);
                         }else{//manual
-                            buscarXprod(ProductoAct,"-1",txtUbb.getText().toString(),false);
+                            buscarXprod(ProductoAct,"-1",false);
                         }//else
+                        txtProducto.setText("");
                     } else{
                         for (int i = 0; i < editable.length(); i++) {
                             char ban;
                             ban = editable.charAt(i);
                             if (ban == '\n') {
                                 if (!chbMan.isChecked()) {//manual no
-                                    buscarXprod(ProductoAct,"1",txtUbb.getText().toString(),true);
+                                    buscarXprod(ProductoAct,"1",true);
                                 }else{//manual si
-                                    buscarXprod(ProductoAct,"-1",txtUbb.getText().toString(),false);
+                                    buscarXprod(ProductoAct,"-1",false);
                                 }//else
+                                txtProducto.setText("");
                                 break;
-                            }//if
+                            }
                         }//for
                     }//else
-                    txtProducto.setText("");
+
                 }//if !editable
             }//after
         });//txtProducto.addTextChanged
@@ -277,10 +279,11 @@ public class ActivityDifUbiExi extends AppCompatActivity {
             public void onClick(View view) {
                 String v1=txtProductoVi.getText().toString();
                 String v2=txtCant.getText().toString();
-                String v3=txtUbb.getText().toString();
-                if(!v1.equals("") && !v2.equals("") && !v3.equals("")){
+                //String v3=txtUbb.getText().toString();
+                if(!v1.equals("") && !v2.equals("")/* && !v3.equals("")*/){
                     ProductoAct=txtProductoVi.getText().toString();
-                    buscarXprod(v1,v2,v3,false);
+                    buscarXprod(v1,v2,false);
+                    //buscarXprod(v1,v2,v3,false);
                 }else{
                     Toast.makeText(ActivityDifUbiExi.this, "Campos vacios", Toast.LENGTH_SHORT).show();
                 }
@@ -935,8 +938,34 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         }//catch
     }//conectaActualiza
 
+    public void evaluar(String prod,int est,String canti,int exist,int cont,String ubi,boolean sum){
+        int op,contA=0,dif=0;
+        if(sum){//cuando es por escaner
+            op=cont+1;
+        }else{//cuando es manual, se toma el valor de txtCantidad
+            contA=Integer.parseInt(canti);
+            op=contA;
+        }
+        dif=exist-op;
+        cont=op;
+        if(est==0 && dif!=0){//CAMBIA DE ESTATUS PARA QUE APARESCA EN CONTADOS
+            est=1;
+        }//if
+        actualizarSql(prod,cont+"",dif+"",ubi,exist+"",est+"");
+        ProductoAct=prod;
+        tipoConsulta(est);
+    }//alertDif
 
-    public void buscarXprod(String prod,String canti,String ubicacion,boolean sum){
+    public void tipoConsulta(int est){
+        if(est==1){//DEPENDIENDO DEL ESTATUS SE CAMBIARA A CONTADOS O NO CONTADOS
+            contados();
+        }else{
+            noContados();
+        }//else
+    }//tipoConsulta
+
+
+    public void buscarXprod(String prod,String canti,boolean sum){//si canti=-1 solo es visualizacion, si no ya se va a modificar
         try{
 
             @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,EXISTENCIA,DIFERENCIA,"+
@@ -944,29 +973,51 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                     "' AND PRODUCTO='"+prod+"' LIMIT 1", null);
             if (fila != null && fila.moveToFirst()) {
                 do {
-                    int contA=0,cont=0,exist=0,dif=0;
+                    int contf=0,cont=0,exist=0,dif=0,est=0;
                     String ubi="";
-                    String est="";
-                    rvDifUbiExi.setAdapter(null);
+
 
                     ProductoAct=fila.getString(0);
-                    if(canti.equals("-1")){
-                        canti=fila.getString(5);
-                    }
-                    exist=Integer.parseInt(fila.getString(2));
-                    cont=Integer.parseInt(fila.getString(5));
-                    ubi=fila.getString(4);
-                    int op;
-                    if(sum==true){
-                        op=cont+1;
-                    }else{
-                        contA=Integer.parseInt(canti);
-                        op=contA;
-                    }
-                    dif=exist-op;
-                    cont=op;
-                    actualizarSql(prod,cont+"",dif+"",ubi,exist+"");
-                    contados();
+                    est=Integer.parseInt(fila.getString(6));
+                    if(canti.equals("-1")){//solo se va a visualizar
+                        dif=Integer.parseInt(fila.getString(3));
+                        if(dif==0){//SI EXISTE PERO SU DIFERENCIA ES 0
+                            bepp.play(sonido_correcto, 1, 1, 1, 0, 0);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(ActivityDifUbiExi.this);
+                            builder.setTitle("AVISO");
+                            builder.setMessage(prod+" ya no tiene diferencias");
+                            builder.setCancelable(false);
+                            contf=Integer.parseInt(fila.getString(1));
+                            exist=Integer.parseInt(fila.getString(2));
+                            cont=Integer.parseInt(fila.getString(5));
+                            ubi=fila.getString(4);
+                            int finalEst = est,finalContf = contf,finalExist = exist;
+                            int finalDif = dif,finalCont = cont;
+                            String finalUbi = ubi;
+                            builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    txtProducto.setText("");
+                                    ProductoAct="";
+                                    posicion=-1;
+                                    detalle2(prod, finalContf +"", finalExist +"", finalDif +"",
+                                            finalUbi, finalCont+"",finalEst+"");
+                                    adapter.index(posicion);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }else{
+                            rvDifUbiExi.setAdapter(null);
+                            tipoConsulta(est);
+                        }//else
+                    }else {//CUANDO SI VA A HABER MODIFICACION
+                        exist=Integer.parseInt(fila.getString(2));
+                        cont=Integer.parseInt(fila.getString(5));
+                        ubi=fila.getString(4);
+                        evaluar(prod,est,canti,exist,cont,ubi,sum);
+                    }//else
                     break;
                 } while (fila.moveToNext());
             }else{
@@ -1016,7 +1067,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 }
                 dif=exist-op;
                 cont=op;
-                actualizarSql(prod,cont+"",dif+"",ubi,exist+"");
+                actualizarSql(prod,cont+"",dif+"",ubi,exist+"","");
                 lista2.get(i).setConteo(cont+"");
                 lista2.get(i).setDiferencia(dif+"");
                 band=true;
@@ -1156,41 +1207,58 @@ public class ActivityDifUbiExi extends AppCompatActivity {
             txtProducto.requestFocus();
         }
     }//detalle
-    public void detalleProd1(String prod){//se busca el detalle en todos lo productos ya sea contados o no contados
-        for(int i=0;i<lista2.size();i++){
-            if(lista2.get(i).getProducto().equals(prod)){
-                txtContF.setText(lista2.get(i).getCantidad());
-                txtExistS.setText(lista2.get(i).getExistencia());
-                txtDif.setText(lista2.get(i).getDiferencia());
-                txtUbb.setText(lista2.get(i).getUbicacion());
-                txtCant.setText(lista2.get(i).getConteo());
-                break;
-            }
+    public void detalle2(String prod,String contf,String exist,String dif,
+                         String ubi,String cont,String est){//detalle del producto seleccionado
+        txtProductoVi.setText(prod);
+        txtContF.setText(contf);
+        txtExistS.setText(exist);
+        txtDif.setText(dif);
+        txtUbb.setText(ubi);
+        txtCant.setText(cont);
+        if(est.equals("1")){
+            est="CONTADO";
+        }else{
+            est="NO CONTADO";
         }
-        rvDifUbiExi.scrollToPosition(posicion);
-    }//detalleLista2
+        tvEstatus.setText(est);
+
+        if(chbMan.isChecked()){
+            txtCant.setEnabled(true);
+            keyboard.hideSoftInputFromWindow(txtCant.getWindowToken(), 0);
+            btnGuardar.setEnabled(true);
+            txtProducto.requestFocus();
+        }else{
+            txtCant.setEnabled(false);
+            keyboard.hideSoftInputFromWindow(txtCant.getWindowToken(), 0);
+            btnGuardar.setEnabled(false);
+            txtProducto.requestFocus();
+        }
+    }//detalle2
 
     public void consultaSql(){
         try{
             lista2.clear();
             int j=0;
             String est;
+            boolean encontro=false;
             rvDifUbiExi.setAdapter(null);
             if(ProductoAct.equals("")){
-                posicion=0;
+                posicion=-1;
             }
             @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,EXISTENCIA,DIFERENCIA,"+
-                    "UBICACION,CONTEO,ESTATUS FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' "+where+"  ORDER BY UBICACION,PRODUCTO ", null);
+                    "UBICACION,CONTEO,ESTATUS FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' AND DIFERENCIA!=0 "+where+"  ORDER BY UBICACION,PRODUCTO ", null);
             if (fila.moveToFirst()) {
                 do {
                     j++;
                     if(ProductoAct.equals(fila.getString(0))){
+                        encontro=true;
                         posicion=j-1;
                     }
                     lista2.add(new DifUbiExist(j+"",fila.getString(0),fila.getString(1),fila.getString(2),
                             fila.getString(3),fila.getString(4),fila.getString(5),fila.getString(6)));
                 } while (fila.moveToNext());
                 //MOSTRAR DETALLE
+                if(!encontro){posicion=0;}
                 adapter= new AdapterDifUbiExi(lista2);
                 rvDifUbiExi.setAdapter(adapter);
                 detalle(posicion);
@@ -1240,13 +1308,13 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         }
     }//insertarSql
 
-    public void actualizarSql(String prod,String cant,String dif,String ubi,String exist){
+    public void actualizarSql(String prod,String cant,String dif,String ubi,String exist,String est){
         try{
             ContentValues valores = new ContentValues();
             valores.put("CONTEO", Integer.parseInt(cant));
             valores.put("EXISTENCIA", exist);
             valores.put("DIFERENCIA", Integer.parseInt(dif));
-            valores.put("ESTATUS", "1");
+            valores.put("ESTATUS", est);
             db.update("DIFUBIEXIST", valores, "PRODUCTO='"+prod+"'" +
                     " AND EMPRESA='"+serv+"' AND UBICACION='"+ubi+"'", null);
             UbicAct=ubi;
