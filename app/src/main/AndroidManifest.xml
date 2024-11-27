@@ -25,18 +25,16 @@
             android:name=".RecepCompras"
             android:configChanges="screenSize|orientation"
             android:parentActivityName=".ActivityMenu"
-            android:screenOrientation="fullSensor"
             tools:ignore="DiscouragedApi" />
         <activity
             android:name=".Activity.ActivityTrasladoUbi"
+            android:configChanges="screenSize|orientation"
             android:parentActivityName=".ActivityMenu"
-            android:screenOrientation="fullSensor"
             tools:ignore="DiscouragedApi" />
         <activity
             android:name=".Activity.ActivityLiberaciones"
             android:configChanges="screenSize|orientation"
             android:parentActivityName=".ActivityMenu"
-            android:screenOrientation="fullSensor"
             tools:ignore="DiscouragedApi" />
         <activity
             android:name=".Activity.ActivityConsultaPA"

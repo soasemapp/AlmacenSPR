@@ -1072,7 +1072,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                     }//if
                     tipoCambio(var);
                     mostrarDetalleProd();
-                    alTerminar(alTerm);
+                    alTerminar(1);
                 }
             }else {
                 mDialog.dismiss();

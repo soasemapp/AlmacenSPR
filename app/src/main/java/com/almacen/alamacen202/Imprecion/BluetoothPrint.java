@@ -531,7 +531,8 @@ public class BluetoothPrint extends AppCompatActivity {
             for (int i = 0; i < listaTraspFiltro.size(); i++) {
                 msg = "";
                 String Producto = listaTraspFiltro.get(i).getProducto();
-                String Cantidad = listaTraspFiltro.get(i).getCantSurt();
+                String Cantidad = (Integer.parseInt(listaTraspFiltro.get(i).getCantSurt())+
+                        Integer.parseInt(listaTraspFiltro.get(i).getCantSinc()))+"";
                 String ubi=listaTraspFiltro.get(i).getUbic();
                 if (Producto.length() < 11) {
                     int espacios = Producto.length();
@@ -577,7 +578,8 @@ public class BluetoothPrint extends AppCompatActivity {
             int cantidatotal = 0;
             for (int k = 0; k < listaTraspFiltro.size(); k++) {
                 if(listaTraspFiltro.get(k).isSincronizado()==true) {//solo los producto sincronizados
-                    cantidatotal = cantidatotal + Integer.parseInt(listaTraspFiltro.get(k).getCantSurt());
+                    cantidatotal = cantidatotal + (Integer.parseInt(listaTraspFiltro.get(k).getCantSurt())
+                            +Integer.parseInt(listaTraspFiltro.get(k).getCantSinc()));
                 }//if
             }//for k
 
