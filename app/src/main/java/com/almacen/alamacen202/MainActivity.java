@@ -385,9 +385,7 @@ public class MainActivity extends AppCompatActivity {
         String NAMESPACE = "http://" + StrServer + "/WSk75Branch/";
         String URL = "http://" + StrServer + "/WSk75Branch";
 
-
         try {
-
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             xmlLog soapEnvelope = new xmlLog(SoapEnvelope.VER11);
             soapEnvelope.xmlLog(getUsuario, getPass, id, "LOG IN", "");
@@ -398,8 +396,6 @@ public class MainActivity extends AppCompatActivity {
             trasport.debug = true;
             trasport.call(SOAP_ACTION, soapEnvelope);
             SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
-
-
         } catch (SoapFault soapFault) {
             mDialog.dismiss();
             mensaje = "Error:" + soapFault.getMessage();

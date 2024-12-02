@@ -128,8 +128,13 @@ public class ActivityAjusteUbi extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(!txtCod.getText().toString().equals("")){
+                    String part="";
+                    String[] parts = txtCod.getText().toString().split("\\s\\d+");
+                    String parte1 = parts[0];
+                    parte1=parte1.replace(" ","");
+                    String prod=parte1;
                     posicion=0;
-                    new AsyncListaUb(txtCod.getText().toString()).execute();
+                    new AsyncListaUb(prod).execute();
                 }else{
                     Toast.makeText(ActivityAjusteUbi.this, "CAMPO VACIO", Toast.LENGTH_SHORT).show();
                 }

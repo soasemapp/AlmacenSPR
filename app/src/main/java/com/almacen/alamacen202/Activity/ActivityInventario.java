@@ -473,6 +473,8 @@ public class ActivityInventario extends AppCompatActivity {
 
     public void accionEscanea(){
         String escan=txtProducto.getText().toString();
+        String Producto = escan.trim();
+        escan = Producto.replaceAll("(\n|\r)", "");
         boolean sumar=false;
         String busqUbic="";
         if(!chbMan.isChecked()){//Normal
@@ -515,11 +517,12 @@ public class ActivityInventario extends AppCompatActivity {
                 alerta.setMessage("El código "+ProductoAct+" esta en la ubicación "+busqUbic).setCancelable(false);
                 String finalBusqUbic = busqUbic;
                 int finalBusqCant = busqCant;
+                String finalEscan = escan;
                 alerta.setNegativeButton("CERRAR", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ProductoAct=escan;UbicAct= finalBusqUbic;
-                        cambioCod(escan, finalBusqCant +"", finalBusqUbic,false);
+                        ProductoAct= finalEscan;UbicAct= finalBusqUbic;
+                        cambioCod(finalEscan, finalBusqCant +"", finalBusqUbic,false);
                         tipoEscan();
                         dwIntent.putExtra("com.symbol.datawedge.api.SCANNER_INPUT_PLUGIN", "ENABLE_PLUGIN");
                         sendBroadcast(dwIntent);

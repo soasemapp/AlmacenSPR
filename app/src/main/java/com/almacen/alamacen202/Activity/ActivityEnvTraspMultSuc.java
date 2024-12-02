@@ -325,6 +325,10 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                         if(chbConten.isChecked()==false){//if chbconten is false
                             Producto=Producto.trim();
                             String part="";
+                            String[] parts = Producto.split("\\s\\d+");
+                            String parte1 = parts[0];
+                            parte1=parte1.replace(" ","");
+                            Producto=parte1;
                             if(Producto.equals(tvProd.getText().toString())){//si escanean el mismo
                                 part=lista.get(posicion).getPartida();
                             }
