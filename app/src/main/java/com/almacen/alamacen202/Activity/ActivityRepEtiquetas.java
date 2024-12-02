@@ -133,7 +133,11 @@ public class ActivityRepEtiquetas extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(!txtProdE.getText().toString().equals("")){
-                    new AsyncListProd(txtProdE.getText().toString()).execute();
+                    String[] parts = txtProdE.getText().toString().split("\\s\\d+");
+                    String parte1 = parts[0];
+                    parte1=parte1.replace(" ","");
+                    String prod=parte1;
+                    new AsyncListProd(prod).execute();
                 }else{
                     Toast.makeText(ActivityRepEtiquetas.this, " Campo Vacio", Toast.LENGTH_SHORT).show();
                 }
