@@ -90,13 +90,12 @@
                     android:layout_marginTop="2dp"
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
-                    android:background="@drawable/roundbutton"
                     android:backgroundTint="@color/Amarillo"
                     android:onClick="Escanear"
                     android:text="@string/escanear"
                     android:textColor="@color/ColorWhite"
                     android:textSize="14sp"
-                    android:visibility="gone"/>
+                    android:visibility="visible"/>
 
             </LinearLayout>
             <com.google.android.material.button.MaterialButton

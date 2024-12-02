@@ -260,18 +260,32 @@ public class ActivityConsultaPA extends AppCompatActivity {
 
                     if (networkInfo != null && networkInfo.isConnected()) {
 
+
+
+
+
                         if (codeBar.equals("Zebra")) {
+
+                            String string = editable.toString();
+                            String[] parts = string.split("\\s\\d+");
+                            String part1 = parts[0];
+                            part1=part1.replace(" ","");
+                            Producto =part1;
                             txtEscaneo.setText("");
-                            txtEscaneo.setText(editable);
-                            Producto = editable.toString();
+                            txtEscaneo.setText(Producto);
                             listaExistencia = new ArrayList<>();
                             recyclerListas.setAdapter(null);
                             ActivityConsultaPA.DatosPrincipales task = new ActivityConsultaPA.DatosPrincipales();
                             task.execute();
                         } else {
-                            for (int i = 0; i < editable.length(); i++) {
+                            String string = editable.toString();
+                            String[] parts = string.split("\\s\\d+");
+                            String part1 = parts[0];
+                            part1=part1.replace(" ","");
+                            Producto =part1;
+                            for (int i = 0; i < Producto.length(); i++) {
                                 char ban;
-                                ban = editable.charAt(i);
+                                ban = Producto.charAt(i);
                                 if (ban == '\n') {
                                     txtEscaneo.setText("");
                                     txtEscaneo.setText(editable);

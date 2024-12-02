@@ -150,7 +150,12 @@ public class ActivityTrasladoUbi extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 if (!editable.toString().equals("")) {
                     if (codeBar.equals("Zebra")){
-                        Producto = editable.toString();
+                        String string = editable.toString();
+                        String[] parts = string.split("\\s\\d+");
+                        String part1 = parts[0];
+                        part1=part1.replace(" ","");
+                        Producto =part1;
+
                         ProducL.setVisibility(View.GONE);
                         EDUbicacionOrigen.requestFocus();
                         TXTPRODVISI.setVisibility(View.GONE);
@@ -173,7 +178,11 @@ public class ActivityTrasladoUbi extends AppCompatActivity {
                             char ban;
                             ban = editable.charAt(i);
                             if(ban == '\n'){
-                                Producto = editable.toString();
+                                String string = editable.toString();
+                                String[] parts = string.split("\\s\\d+");
+                                String part1 = parts[0];
+                                part1=part1.replace(" ","");
+                                Producto =part1;
                                 Producto = Producto.replace("\n","");
                                 ProducL.setVisibility(View.GONE);
                                 EDUbicacionOrigen.requestFocus();
