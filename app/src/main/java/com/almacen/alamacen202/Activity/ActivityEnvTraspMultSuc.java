@@ -323,12 +323,13 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 if(!editable.toString().equals("")){
                     if (codeBar.equals("Zebra")) {
                         if(chbConten.isChecked()==false){//if chbconten is false
-                            Producto=Producto.trim();
-                            String part="";
                             String[] parts = Producto.split("\\s\\d+");
-                            String parte1 = parts[0];
-                            parte1=parte1.replace(" ","");
-                            Producto=parte1;
+                            String part1 = parts[0];
+                            if (parts.length>1){
+                                part1=part1.replace(" ","");
+                            }
+                            Producto =part1;
+                            String part="";
                             if(Producto.equals(tvProd.getText().toString())){//si escanean el mismo
                                 part=lista.get(posicion).getPartida();
                             }
@@ -525,7 +526,13 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(!txtBuscaP.getText().toString().equals("")){
-                    String comparar=txtBuscaP.getText().toString().trim();
+                    String comparar=txtBuscaP.getText().toString();
+                    String[] parts = comparar.split("\\s\\d+");
+                    String part1 = parts[0];
+                    if (parts.length>1){
+                        part1=part1.replace(" ","");
+                    }
+                    comparar =part1;
                     escan=false;
                     boolean existe=false;
                     for(int i=0;i<lista.size();i++){
