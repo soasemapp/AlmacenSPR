@@ -247,8 +247,12 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                     ProductoAct=editable.toString();
                     txtProductoVi.setText(ProductoAct);
                     if (codeBar.equals("Zebra")) {//codebar
-                        ProductoAct = ProductoAct.trim();
-                        ProductoAct = ProductoAct.replaceAll("(\n|\r)", "");
+                        String[] parts = ProductoAct.split("\\s\\d+");
+                        String part1 = parts[0];
+                        if (parts.length>1){
+                            part1=part1.replace(" ","");
+                        }
+                        ProductoAct =part1;
                         if (!chbMan.isChecked()) {//normal
                             buscarXprod(ProductoAct,"1",true);
                         }else{//manual

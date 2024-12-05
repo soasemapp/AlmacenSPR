@@ -473,8 +473,12 @@ public class ActivityInventario extends AppCompatActivity {
 
     public void accionEscanea(){
         String escan=txtProducto.getText().toString();
-        String Producto = escan.trim();
-        escan = Producto.replaceAll("(\n|\r)", "");
+        String[] parts = escan.split("\\s\\d+");
+        String part1 = parts[0];
+        if (parts.length>1){
+            part1=part1.replace(" ","");
+        }
+        escan =part1;
         boolean sumar=false;
         String busqUbic="";
         if(!chbMan.isChecked()){//Normal
