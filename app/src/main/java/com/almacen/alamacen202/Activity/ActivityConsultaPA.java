@@ -265,12 +265,15 @@ public class ActivityConsultaPA extends AppCompatActivity {
 
 
                         if (codeBar.equals("Zebra")) {
-
                             String string = editable.toString();
                             String[] parts = string.split("\\s\\d+");
                             String part1 = parts[0];
-                            part1=part1.replace(" ","");
+
+                            if (parts.length>1){
+                                part1=part1.replace(" ","");
+                            }
                             Producto =part1;
+
                             txtEscaneo.setText("");
                             txtEscaneo.setText(Producto);
                             listaExistencia = new ArrayList<>();

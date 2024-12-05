@@ -557,7 +557,10 @@ public class ActivityLiberaciones extends AppCompatActivity {
         String string = editable;
         String[] parts = string.split("\\s\\d+");
         String part1 = parts[0];
-        part1=part1.replace(" ","");
+
+        if (parts.length>1){
+            part1=part1.replace(" ","");
+        }
         editable =part1;
 
         String Producto = listaProduAduana.get(contlis).getProducto();

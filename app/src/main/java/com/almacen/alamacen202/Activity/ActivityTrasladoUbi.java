@@ -150,10 +150,15 @@ public class ActivityTrasladoUbi extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 if (!editable.toString().equals("")) {
                     if (codeBar.equals("Zebra")){
+
+
                         String string = editable.toString();
                         String[] parts = string.split("\\s\\d+");
                         String part1 = parts[0];
-                        part1=part1.replace(" ","");
+
+                        if (parts.length>1){
+                            part1=part1.replace(" ","");
+                        }
                         Producto =part1;
 
                         ProducL.setVisibility(View.GONE);
