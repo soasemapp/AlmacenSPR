@@ -211,8 +211,6 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 Producto = editable.toString();
                 if (!editable.toString().equals("")) {
                     if (codeBar.equals("Zebra")) {
-                        Producto = Producto.trim();
-                        Producto = Producto.replaceAll("(\n|\r)", "");
                         accionEscanea(Producto);
                         txtProd.setText("");
                         txtProd.requestFocus();
@@ -557,6 +555,9 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     }//encontrarposenlista
 
     public void accionEscanea(String prod){
+        String[] parts = prod.split("\\s\\d+");
+        String part1 = parts[0];
+        prod=part1.trim();
         if(tvProd.getText().toString().equals(prod)){//CUANDO ES EL MISMO CODIGO Y NO SE TIENE QUE BUSCAR
             actualizaDat(posicion,prod);
         }else{//
@@ -617,6 +618,9 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
 
     public void buscar(String prod,boolean sumar){
         boolean existe=false;
+        String[] parts = prod.split("\\s\\d+");
+        String part1 = parts[0];
+        prod=part1.trim();
         for(int i=0;i<listaTrasp.size();i++){
             if(listaTrasp.get(i).getProducto().equals(prod)){
                 existe=true;

@@ -247,8 +247,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                     ProductoAct=editable.toString();
                     txtProductoVi.setText(ProductoAct);
                     if (codeBar.equals("Zebra")) {//codebar
-                        ProductoAct = ProductoAct.trim();
-                        ProductoAct = ProductoAct.replaceAll("(\n|\r)", "");
+
                         if (!chbMan.isChecked()) {//normal
                             buscarXprod(ProductoAct,"1",true);
                         }else{//manual
@@ -968,6 +967,9 @@ public class ActivityDifUbiExi extends AppCompatActivity {
 
 
     public void buscarXprod(String prod,String canti,boolean sum){//si canti=-1 solo es visualizacion, si no ya se va a modificar
+        String[] parts = prod.split("\\s\\d+");
+        String part1 = parts[0];
+        prod=part1.trim();
         try{
 
             @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,EXISTENCIA,DIFERENCIA,"+
@@ -996,13 +998,14 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                             int finalEst = est,finalContf = contf,finalExist = exist;
                             int finalDif = dif,finalCont = cont;
                             String finalUbi = ubi;
+                            String finalProd = prod;
                             builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     txtProducto.setText("");
                                     ProductoAct="";
                                     posicion=-1;
-                                    detalle2(prod, finalContf +"", finalExist +"", finalDif +"",
+                                    detalle2(finalProd, finalContf +"", finalExist +"", finalDif +"",
                                             finalUbi, finalCont+"",finalEst+"");
                                     adapter.index(posicion);
                                     adapter.notifyDataSetChanged();
