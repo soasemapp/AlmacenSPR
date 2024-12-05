@@ -268,10 +268,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
                             String string = editable.toString();
                             String[] parts = string.split("\\s\\d+");
                             String part1 = parts[0];
-
-                            if (parts.length>1){
-                                part1=part1.replace(" ","");
-                            }
+                            part1.trim();
                             Producto =part1;
 
                             txtEscaneo.setText("");
