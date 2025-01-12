@@ -17,6 +17,7 @@ import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -44,6 +45,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,10 +61,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.almacen.alamacen202.Adapter.AdaptadorCajaxProd;
 import com.almacen.alamacen202.Adapter.AdaptadorTraspasos;
 import com.almacen.alamacen202.Adapter.AdapterInventario;
 import com.almacen.alamacen202.Imprecion.BluetoothPrint;
 import com.almacen.alamacen202.R;
+import com.almacen.alamacen202.SetterandGetters.CajaXProd;
 import com.almacen.alamacen202.SetterandGetters.EnvTraspasos;
 import com.almacen.alamacen202.SetterandGetters.Folios;
 import com.almacen.alamacen202.SetterandGetters.Inventario;
@@ -98,11 +102,10 @@ import java.util.Set;
 import dmax.dialog.SpotsDialog;
 
 public class ActivityRecepTraspMultSuc extends AppCompatActivity {
-    private static final int REQUEST_ENABLE_BT = 11;
     private ProgressDialog progressDialog;
     private SharedPreferences preference;
     private SharedPreferences.Editor editor;
-    private boolean datos = false, modificados = false;
+    private boolean modificados = false;
     private int posicion = 0, posG = -1, CONTCAJA = 1, TOTCAJAS = 0, TOTP = 0, RECEP = 0;
     private String strusr, strpass, strbran, strServer, codeBar, mensaje, Producto = "", serv, Folio = "", impresora;
     private ArrayList<Traspasos> listaTrasp = new ArrayList<>();
@@ -110,19 +113,22 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     private AutoCompleteTextView spCaja;
     private ImageView ivProd;
     private TextView tvProd;
-    private Button btnBuscar, btnAtras, btnAdelante, btnCorr, btnBackC, btnNextC, btnImpr,btnBusc;
+    private Button btnBuscar, btnAtras, btnAdelante, btnCorr, btnBackC, btnNextC,
+            btnImpr,btnBuscCaj;
     private RecyclerView rvTraspasos;
     private AdaptadorTraspasos adapter;
     private AlertDialog mDialog;
     private InputMethodManager keyboard;
     private String urlImagenes, extImg;
-    private int sonido_correcto, sonido_error;
-    private SoundPool bepp;
+    //private int sonido_correcto, sonido_error;
+    //private SoundPool bepp;
+    private MediaPlayer mpError,mpCorrecto;
     Context context = this;
     private Intent dwIntent;
     AlertDialog dialog6 = null;
     AlertDialog.Builder builder6;
     private AlertDialog alertDialog=null;
+    private String sucorg;
     @RequiresApi(api = Build.VERSION_CODES.M)
 
 
@@ -182,12 +188,14 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         txtTotPza = findViewById(R.id.txtTotPza);
         txtUbicT = findViewById(R.id.txtUbicT);
         btnImpr = findViewById(R.id.btnImpr);
-        btnBusc=findViewById(R.id.btnBusc);
+        btnBuscCaj=findViewById(R.id.btnBuscCaj);
         txtCantSinc = findViewById(R.id.txtCantSinc);
 
-        bepp = new SoundPool(1, AudioManager.STREAM_MUSIC, 1);
+        /*bepp = new SoundPool(1, AudioManager.STREAM_MUSIC, 1);
         sonido_correcto = bepp.load(ActivityRecepTraspMultSuc.this, R.raw.sonido_correct, 1);
-        sonido_error = bepp.load(ActivityRecepTraspMultSuc.this, R.raw.error, 1);
+        sonido_error = bepp.load(ActivityRecepTraspMultSuc.this, R.raw.error, 1);*/
+        mpCorrecto = MediaPlayer.create(context, R.raw.sonido_correct);
+        mpError=MediaPlayer.create(context, R.raw.error);
 
         rvTraspasos = findViewById(R.id.rvTraspasos);
         rvTraspasos.setLayoutManager(new LinearLayoutManager(ActivityRecepTraspMultSuc.this));
@@ -324,7 +332,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             }
         });
 
-        btnBusc.setOnClickListener(new View.OnClickListener() {
+        btnBuscCaj.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!listaTrasp.isEmpty() && !listaTrasp.get(posG).isSincronizado()) {
@@ -333,7 +341,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                             listaTrasp.get(posG).getCantSurt(), "change",
                             false, listaTrasp.get(posG).getProducto(), 0).execute();
                 } else {
-                    alertBusca();
+                    alertBuscaCajas();
                 }//else
             }
         });
@@ -361,14 +369,23 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
 
         dwIntent = new Intent();
         txtFolBusq.requestFocus();
-
-        //PERMISOS PARA BLUETOOTH SOLO SE MUESTRA EN VERSIONES POSTERIORES DE ANDROID 13
-        /*ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.BLUETOOTH_CONNECT},
-                PackageManager.PERMISSION_GRANTED);
-
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());*/
     }//onCreate
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mpCorrecto.stop();
+        mpError.stop();
+        mpCorrecto = MediaPlayer.create(context, R.raw.sonido_correct);
+        mpError=MediaPlayer.create(context, R.raw.error);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mpCorrecto.stop();
+        mpError.stop();
+    }
 
 
     public void cambiaCajas() {
@@ -539,7 +556,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         btnAtras.setEnabled(false);
         btnAdelante.setEnabled(false);
         btnCorr.setEnabled(false);
-        btnBusc.setEnabled(false);
+        btnBuscCaj.setEnabled(false);
+        sucorg="";
         posG = -1;
     }//limpiar
 
@@ -602,7 +620,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         } else {
             posicion=pos;
             mostrarDetalleProd();
-            bepp.play(sonido_error, 1, 1, 1, 0, 0);
+            mpError.start();
             AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
             builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
                 @Override
@@ -628,14 +646,14 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 posG=posicion;
                 if(alertDialog!=null && alertDialog.isShowing()){//para cerrar el alertde busqueda
                     alertDialog.dismiss();
-                    btnBusc.setEnabled(true);
+                    btnBuscCaj.setEnabled(true);
                 }
                 new AsyncRefrescarRecep(Folio,prod, spCaja.getText().toString(),sumar).execute();
                 break;
             }//if
         }//for
         if(!existe){
-            bepp.play(sonido_error, 1, 1, 1, 0, 0);
+            mpError.start();
             AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
             builder.setTitle("AVISO");
             builder.setMessage("No existe "+prod+" en la lista");
@@ -646,8 +664,56 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         }
     }//evaluar
 
+    public void alertBuscaCajas(){
+        btnBuscCaj.setEnabled(false);
+        AlertDialog.Builder alert = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+        LayoutInflater inflater = ActivityRecepTraspMultSuc.this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_cajaxprod, null);
+        alert.setView(dialogView);
+        alert.setCancelable(false);
+        alert.setNegativeButton("ACEPTAR",null);
+
+        TextView tvTitulo = dialogView.findViewById(R.id.tvTitulo);
+        LinearLayout lyBusq = dialogView.findViewById(R.id.lyBusq);
+        RecyclerView rvCaja =  dialogView.findViewById(R.id.rvCaja);
+        Button btnB = dialogView.findViewById(R.id.btnB);
+        EditText txtBuscaP = dialogView.findViewById(R.id.txtBuscaP);
+        GridLayoutManager gl = new GridLayoutManager(ActivityRecepTraspMultSuc.this, 1);
+        rvCaja.setLayoutManager(gl);
+
+        tvTitulo.setText(R.string.buscarencaja);
+        lyBusq.setVisibility(View.VISIBLE);
+
+        btnB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!txtBuscaP.getText().toString().equals("")){
+                    keyboard.hideSoftInputFromWindow(txtBuscaP.getWindowToken(), 0);
+                    new AsyncConsultCP(sucorg,Folio,txtBuscaP.getText().toString(),rvCaja).execute();
+                }else{
+                    Toast.makeText(ActivityRecepTraspMultSuc.this, "Campo Vacío", Toast.LENGTH_SHORT).show();
+                }//else
+            }//onclick
+        });//btnB
+
+        alert.setCancelable(false);
+        alert.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                keyboard.hideSoftInputFromWindow(txtBuscaP.getWindowToken(), 0);
+                btnBuscCaj.setEnabled(true);
+                txtProd.requestFocus();
+                alertDialog=null;
+            }
+        });//cerrar
+
+        alertDialog = alert.create();
+        alertDialog.show();
+        txtBuscaP.requestFocus();
+    }//alertBuscaCajas
+
     public void alertBusca(){
-        btnBusc.setEnabled(false);
+        //btnBusc.setEnabled(false);
         AlertDialog.Builder alert = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
         LayoutInflater inflater = ActivityRecepTraspMultSuc.this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_buscprod, null);
@@ -676,7 +742,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 keyboard.hideSoftInputFromWindow(txtBuscaP.getWindowToken(), 0);
-                btnBusc.setEnabled(true);
+                //btnBusc.setEnabled(true);
                 txtProd.requestFocus();
                 alertDialog=null;
             }
@@ -711,10 +777,10 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         txtProd.setEnabled(true);
         txtProd.requestFocus();
         posicion = 0;
-        btnBusc.setEnabled(true);
+        btnBuscCaj.setEnabled(true);
         if(posicion>=listaTrasp.size()){
             posicion=listaTrasp.size()-1;
-            btnBusc.setEnabled(false);
+            btnBuscCaj.setEnabled(false);
         }
         mostrarDetalleProd();
     }//ver lista
@@ -755,13 +821,15 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                         JSONArray jsonArray = jsonObj.getJSONArray("Response");
                         int num = 1;
                         listaTrasp.clear();
+                        JSONObject dato=null;
                         for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
+                            dato = jsonArray.getJSONObject(i);//Conjunto de datos
                             listaTrasp.add(new Traspasos(num + "", dato.getString("PRODUCTO"), dato.getString("CANTIDAD"),
                                     dato.getString("UBICACION"), dato.getString("RECEPCION"),"0", dato.getString("EXISTENCIA"), true));
                             num++;
                             mensaje = "";
                         }//for
+                        sucorg=dato.getString("SUCORIG");
                     } catch (final JSONException e) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -1064,7 +1132,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                     builder.setCancelable(false);
                     builder.setTitle("HAS TERMINADO").create().show();
                 }
-                bepp.play(sonido_correcto, 1, 1, 1, 0, 0);
+                mpCorrecto.start();
                 listaTrasp.get(posG).setCantSinc(newcant);
                 listaTrasp.get(posG).setCantSurt("0");
                 listaTrasp.get(posG).setSincronizado(true);
@@ -1081,7 +1149,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             }else {
                 mDialog.dismiss();
                 posicion=posG;
-                bepp.play(sonido_error, 1, 1, 1, 0, 0);
+                mpError.start();
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
                 String text="VOLVER A INTENTAR";
                 if(mensaje.equals("DIF")){
@@ -1126,6 +1194,87 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             }//else
         }//onPost
     }//AsyncActualizar
+
+    private class AsyncConsultCP extends AsyncTask<Void, Void, Void> {
+        private String suc,folio,producto;
+        private ArrayList<CajaXProd> listaCajaXProd= new ArrayList<>();
+        private RecyclerView rvCaja;
+        private boolean conn;
+        public AsyncConsultCP(String suc, String folio,String producto,RecyclerView rvCaja) {
+            this.suc = suc;
+            this.folio = folio;
+            this.producto=producto;
+            this.rvCaja = rvCaja;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mDialog.show();
+            mensaje="";
+            rvCaja.setAdapter(null);
+        }//onPreExecute
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            conn=firtMet();
+            if(conn==true){
+                HttpHandler sh = new HttpHandler();
+                String parametros="k_Folio="+folio+"&k_Sucursal="+suc+"&k_Producto="+producto+"";
+                String url = "http://"+strServer+"/ConsultCP?"+parametros;
+                String jsonStr = sh.makeServiceCall(url,strusr,strpass);
+                if (jsonStr != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(jsonStr);
+                        // Obtener array de datos
+                        JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                        for(int i=0;i<jsonArray.length();i++){
+                            JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
+                            listaCajaXProd.add(new CajaXProd(dato.getString("k_NumeroCajas"),dato.getString("k_Cantidad")));
+                            mensaje="";
+                        }//for
+                    } catch (final JSONException e) {
+                        //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mensaje="No existe producto en este folio";
+                            }//run
+                        });
+                    }//catch JSON EXCEPTION
+                }else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mensaje="Problema al consultar producto";
+                        }//run
+                    });//runUniTthread
+                }//else
+                return null;
+            }else{
+                mensaje="Problemas de conexión";
+                return null;
+            }//else
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(Void aBoolean) {
+            super.onPostExecute(aBoolean);
+            mDialog.dismiss();
+            if (listaCajaXProd.size()==0) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                builder.setTitle("AVISO");
+                builder.setMessage(mensaje);
+                builder.setCancelable(false);
+                builder.setNegativeButton("OK",null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }else{
+                AdaptadorCajaxProd adap  = new AdaptadorCajaxProd(listaCajaXProd);
+                rvCaja.setAdapter(adap);
+            }//else
+        }//onPost
+    }//AsyncConsultCP
 
     public void alTerminar(int opc) {
         switch (opc) {
@@ -1272,6 +1421,16 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     }//imprimir
 
     public void ImprimirTicketRec(int Cont) {
+        if (ActivityCompat.checkSelfPermission(ActivityRecepTraspMultSuc.this,
+                Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            //PERMISOS PARA BLUETOOTH
+            ActivityCompat.requestPermissions(ActivityRecepTraspMultSuc.this,
+                    new String[]{Manifest.permission.BLUETOOTH_CONNECT},
+                    PackageManager.PERMISSION_GRANTED);
+            Toast.makeText(ActivityRecepTraspMultSuc.this,
+                    "NECESITA PERMISOS DE BLUETOOTH", Toast.LENGTH_SHORT).show();
+            return;
+        }
         BluetoothPrint imprimir = new BluetoothPrint(context, getResources());
         if (!impresora.equals("null")) {
             builder6 = new AlertDialog.Builder(this);

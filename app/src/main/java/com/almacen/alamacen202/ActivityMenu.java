@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.almacen.alamacen202.Activity.ActivityAjusteUbi;
 import com.almacen.alamacen202.Activity.ActivityConsultaPA;
@@ -52,12 +54,15 @@ public class ActivityMenu extends AppCompatActivity {
     private LinearLayout Conten;
     private SharedPreferences preference,preferenceF,preferenceD,preferenceR;
     private SharedPreferences.Editor editor,editor2,editor3,editor4;
-    private String codeBarClave,urlImagenes,extIm;;
+    private String codeBarClave,urlImagenes,extIm,update;
 
     private ConexionSQLiteHelper conn;
     private SQLiteDatabase db;
     private LinearLayout lyAdicSPR,ly2;
     private AlertDialog mDialog;
+    MenuItem botonAct;
+    private String urlactualizar="https://drive.google.com/drive/folders/1_ZDyWSU36BPhULpW-Yj8to_Y1Sf7bPKy";//url por default
+
 
 
     @Override
@@ -82,6 +87,7 @@ public class ActivityMenu extends AppCompatActivity {
         StrServer = preference.getString("Server", "null");
         strusr = preference.getString("user", "null");
         strpass = preference.getString("pass", "null");
+        update = preference.getString("update", "null");
         versionApp=getString(R.string.versionNum);
         mDialog = new SpotsDialog(ActivityMenu.this);
 
@@ -226,10 +232,29 @@ public class ActivityMenu extends AppCompatActivity {
         editor.putString("urlImagenes",urlImagenes);
         editor.putString("ext", extIm);
         editor.commit();
+
+        new AsyncVersionesApp().execute();
     }
+
+    public void actualizarApp(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityMenu.this);
+        builder.setTitle("AVISO");
+        builder.setMessage("¿Ir a actualizar app?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("ACTUALIZAR", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                openLink();
+            }
+        });
+        builder.setNegativeButton("CANCELAR", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }//actualizarApp
 
     private class AsyncVersionesApp extends AsyncTask<Void, Boolean, Boolean> {
         String respuesta="";
+        String mensaje="";
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -239,31 +264,30 @@ public class ActivityMenu extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... voids) {
             HttpHandler sh = new HttpHandler();//separar párametros con &
-            String parametros="Clave=3";
+            String parametros="Clave=2";
             String url = "http://"+StrServer+"/resVersionesApp?"+parametros;
             String jsonStr = sh.makeServiceCall(url,strusr,strpass);
             //Log.e(TAG, "Respuesta de la url: " + jsonStr);
-            if (jsonStr != null) {
+            if(jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
                     // Obtener array de datos
                     JSONArray jsonArray = jsonObj.getJSONArray("Response");
                     respuesta=jsonArray.getString(0);
-                }catch (final JSONException e) {
-                    //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            respuesta=e.getMessage();
-                        }//run
-                    });
+                    String dir=jsonArray.getString(1);
+                    if (!dir.equals("")){
+                        urlactualizar=dir;
+                    }
+                    mensaje="";
+                } catch (JSONException e) {
+                    respuesta=e.getMessage();mensaje=respuesta;
                 }//catch JSON EXCEPTION
-            } else {
-                //Log.e(TAG, "Problemas al traer datos");
+            }else {
+                mensaje="1";
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        respuesta="No fue posible obtener datos del servidor";
+                        respuesta="No fue posible obtener datos del servidor";mensaje=respuesta;
                     }//run
                 });//runUniTthread
             }//else
@@ -274,27 +298,54 @@ public class ActivityMenu extends AppCompatActivity {
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
             mDialog.dismiss();
-            if(!respuesta.equals(versionApp)){//si la vresion no es la misma
-                if(!respuesta.equals("")){
-                    mensaje="Hay una nueva actualización, favor de instalarla";
-                }else{
-                    mensaje=respuesta;
-                }
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityMenu.this);
-                builder.setTitle("AVISO");
-                builder.setMessage(mensaje);
-                builder.setCancelable(false);
-                builder.setNegativeButton("Aceptar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        finish();
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }//if
+            botonAct.setVisible(false);
+            if(mensaje.equals("")){
+                mostrarOcultarAct(respuesta);
+            }else{
+                Toast.makeText(ActivityMenu.this, respuesta, Toast.LENGTH_SHORT).show();
+            }
+
         }//onPost
     }//AsyncVersionesApp
+
+    private void openLink(){
+        Uri uri=Uri.parse(urlactualizar);
+        startActivity(new Intent(Intent.ACTION_VIEW,uri));
+    }//openLink
+
+    public void mostrarOcultarAct(String respuesta){
+        int versionact;
+        int versionapp=Integer.parseInt(versionApp.replaceAll("[^\\w+]", ""));
+        if(respuesta.equals("")){
+            versionact=versionapp;
+        }else{
+            versionact=Integer.parseInt(respuesta.replaceAll("[^\\w+]", ""));
+        }//else
+        if(versionapp<versionact){//cuando no esta actualizada
+            botonAct.setVisible(true);
+            /*if(!update.equals("SI")){//si ya se le pregunto no le va a preguntar de nuevo
+                editor.putString("update", "SI");
+                editor.commit();
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityMenu.this);
+                builder.setTitle("AVISO");
+                builder.setMessage("Hay una nueva actualización");
+                builder.setCancelable(false);
+                builder.setPositiveButton("ACTUALIZAR", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        openLink();
+                    }
+                });
+                builder.setNegativeButton("CERRAR", null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }*///if update
+        }else {//if versionesapp<versionact
+            editor.putString("update", "SI");
+            editor.commit();
+        }
+        update = preference.getString("update", "null");
+    }//mostrarOcultarAct
 
 
     public void eliminarSqlySP() {//eliminar bd y shared preferences yani(true cuando tambien se incluya la de inventario)
@@ -372,44 +423,36 @@ public class ActivityMenu extends AppCompatActivity {
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menuoverflow, menu);
+        MenuItem item = menu.findItem(R.id.MenuSPR);
+        botonAct= menu.findItem(R.id.actualizacion);
         if(StrServer.equals("sprautomotive.servehttp.com:9090")){
-           MenuItem item = menu.findItem(R.id.MenuSPR);
-           MenuItem itemRod = menu.findItem(R.id.RodatechMenu);
-           MenuItem itemPartech = menu.findItem(R.id.PartechMenu);
-           MenuItem itemSharck = menu.findItem(R.id.SharkMenu);
-           itemRod.setVisible(false);
-           itemPartech.setVisible(true);
-           itemSharck.setVisible(true);
-           item.setVisible(true);
-       }else if(StrServer.equals("sprautomotive.servehttp.com:9095")){
-           MenuItem item = menu.findItem(R.id.MenuSPR);
+            MenuItem itemRod = menu.findItem(R.id.RodatechMenu);
+            MenuItem itemPartech = menu.findItem(R.id.PartechMenu);
+            MenuItem itemSharck = menu.findItem(R.id.SharkMenu);
+            itemRod.setVisible(false);
+            itemPartech.setVisible(true);
+            itemSharck.setVisible(true);
+            item.setVisible(true);
+        }else if(StrServer.equals("sprautomotive.servehttp.com:9095")){
+            MenuItem itemRod = menu.findItem(R.id.RodatechMenu);
+            MenuItem itemPartech = menu.findItem(R.id.PartechMenu);
+            MenuItem itemSharck = menu.findItem(R.id.SharkMenu);
+            itemRod.setVisible(true);
+            itemPartech.setVisible(false);
+            itemSharck.setVisible(true);
 
-           MenuItem itemRod = menu.findItem(R.id.RodatechMenu);
-           MenuItem itemPartech = menu.findItem(R.id.PartechMenu);
-           MenuItem itemSharck = menu.findItem(R.id.SharkMenu);
-           itemRod.setVisible(true);
-           itemPartech.setVisible(false);
-           itemSharck.setVisible(true);
-
-           item.setVisible(true);
-       }else if(StrServer.equals("sprautomotive.servehttp.com:9080")){
-           MenuItem item = menu.findItem(R.id.MenuSPR);
-
-
-           MenuItem itemRod = menu.findItem(R.id.RodatechMenu);
-           MenuItem itemPartech = menu.findItem(R.id.PartechMenu);
-           MenuItem itemSharck = menu.findItem(R.id.SharkMenu);
-           itemRod.setVisible(true);
-           itemPartech.setVisible(true);
-           itemSharck.setVisible(false);
-
-
-           item.setVisible(true);
-       }else{
-           MenuItem item = menu.findItem(R.id.MenuSPR);
-           item.setVisible(false);
-       }
-
+            item.setVisible(true);
+        }else if(StrServer.equals("sprautomotive.servehttp.com:9080")){
+            MenuItem itemRod = menu.findItem(R.id.RodatechMenu);
+            MenuItem itemPartech = menu.findItem(R.id.PartechMenu);
+            MenuItem itemSharck = menu.findItem(R.id.SharkMenu);
+            itemRod.setVisible(true);
+            itemPartech.setVisible(true);
+            itemSharck.setVisible(false);
+            item.setVisible(true);
+        }else{
+            item.setVisible(false);
+        }
         return true;
     }
 
@@ -417,99 +460,107 @@ public class ActivityMenu extends AppCompatActivity {
         int id = item.getItemId();
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityMenu.this);
+        AlertDialog titulo = null;
         if (networkInfo != null && networkInfo.isConnected()) {
-            if (id == R.id.cerrarSe) {
-                AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityMenu.this);
-                alerta.setMessage("¿Desea cerrar sesión?").setCancelable(false).setNegativeButton("CANCELAR", null);
-                alerta.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        editor.clear();
-                        editor.commit();
-                        eliminarSqlySP();
-                        Intent cerrar = new Intent(ActivityMenu.this, MainActivity.class);
-                        startActivity(cerrar);
-                        System.exit(0);
-                        finish();
-                    }//onclick
-                });
-                AlertDialog titulo = alerta.create();
-                titulo.setTitle("Aviso");
-                titulo.show();
-            }else if (id == R.id.RodatechMenu){
-                StrServer = "sprautomotive.servehttp.com:9090";
-                editor.putString("Server", StrServer);
-                editor.putString("urlImagenes",urlImagenes);
-                editor.putString("ext", extIm);
-                editor.commit();
-                eliminarSqlySP();
-                overridePendingTransition(0, 0);
-                startActivity(getIntent());
-                overridePendingTransition(0, 0);
-                finish();
-            }else if (id == R.id.PartechMenu){
-                StrServer = "sprautomotive.servehttp.com:9095";
-                editor.putString("Server", StrServer);
-                editor.putString("urlImagenes",urlImagenes);
-                editor.putString("ext", extIm);
-                editor.commit();
-                eliminarSqlySP();
-                overridePendingTransition(0, 0);
-                startActivity(getIntent());
-                overridePendingTransition(0, 0);
-                finish();
-            }else if (id == R.id.SharkMenu){
-                StrServer = "sprautomotive.servehttp.com:9080";
-                editor.putString("Server", StrServer);
-                editor.putString("urlImagenes",urlImagenes);
-                editor.putString("ext", extIm);
-                editor.commit();
-                eliminarSqlySP();
-                overridePendingTransition(0, 0);
-                startActivity(getIntent());
-                overridePendingTransition(0, 0);
-                finish();
-            }
-            else if (id == R.id.idZebra){
-                AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityMenu.this);
-                alerta.setMessage("USTED A SELECCIONADO EL LECTOR DE CODIGO ZEBRA").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                        codeBarClave="Zebra";
-                        editor.putString("codeBar",codeBarClave);
-                        editor.commit();
-                    }
-                });
-                AlertDialog titulo = alerta.create();
-                titulo.setTitle("¡AVISO!");
-                titulo.show();
-
-            }else if (id == R.id.idOtros){
-                AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityMenu.this);
-                alerta.setMessage("USTED A SELECCIONADO EL LECTOR DE CODIGO GENERICO").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                        codeBarClave="Generico";
-                        editor.putString("codeBar",codeBarClave);
-                        editor.commit();
-                    }
-                });
-
-                AlertDialog titulo = alerta.create();
-                titulo.setTitle("¡AVISO!");
-                titulo.show();
-            }
-        } else {
-            AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityMenu.this);
+            switch (id){
+                case R.id.cerrarSe:
+                    alerta.setMessage("¿Desea cerrar sesión?").setCancelable(false).setNegativeButton("CANCELAR", null);
+                    alerta.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            editor.clear();
+                            editor.commit();
+                            eliminarSqlySP();
+                            getApplicationContext().deleteDatabase("bd_INVENTARIO");
+                            Intent cerrar = new Intent(ActivityMenu.this, MainActivity.class);
+                            startActivity(cerrar);
+                            System.exit(0);
+                            finish();
+                        }//onclick
+                    });
+                    titulo = alerta.create();
+                    titulo.setTitle("Aviso");
+                    titulo.show();
+                    break;
+                case R.id.RodatechMenu:
+                    StrServer = "sprautomotive.servehttp.com:9090";
+                    editor.putString("Server", StrServer);
+                    editor.putString("urlImagenes",urlImagenes);
+                    editor.putString("ext", extIm);
+                    editor.commit();
+                    eliminarSqlySP();
+                    overridePendingTransition(0, 0);
+                    startActivity(getIntent());
+                    overridePendingTransition(0, 0);
+                    finish();
+                    break;
+                case R.id.PartechMenu:
+                    StrServer = "sprautomotive.servehttp.com:9095";
+                    editor.putString("Server", StrServer);
+                    editor.putString("urlImagenes",urlImagenes);
+                    editor.putString("ext", extIm);
+                    editor.commit();
+                    eliminarSqlySP();
+                    overridePendingTransition(0, 0);
+                    startActivity(getIntent());
+                    overridePendingTransition(0, 0);
+                    finish();
+                    break;
+                case R.id.SharkMenu:
+                    StrServer = "sprautomotive.servehttp.com:9080";
+                    editor.putString("Server", StrServer);
+                    editor.putString("urlImagenes",urlImagenes);
+                    editor.putString("ext", extIm);
+                    editor.commit();
+                    eliminarSqlySP();
+                    overridePendingTransition(0, 0);
+                    startActivity(getIntent());
+                    overridePendingTransition(0, 0);
+                    finish();
+                    break;
+                case R.id.idZebra:
+                    alerta = new AlertDialog.Builder(ActivityMenu.this);
+                    alerta.setMessage("USTED A SELECCIONADO EL LECTOR DE CODIGO ZEBRA").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                            codeBarClave="Zebra";
+                            editor.putString("codeBar",codeBarClave);
+                            editor.commit();
+                        }
+                    });
+                    titulo = alerta.create();
+                    titulo.setTitle("¡AVISO!");
+                    titulo.show();
+                    break;
+                case R.id.idOtros:
+                    alerta = new AlertDialog.Builder(ActivityMenu.this);
+                    alerta.setMessage("USTED A SELECCIONADO EL LECTOR DE CODIGO GENERICO").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                            codeBarClave="Generico";
+                            editor.putString("codeBar",codeBarClave);
+                            editor.commit();
+                        }
+                    });
+                    titulo.setTitle("¡AVISO!");
+                    titulo.show();
+                    break;
+                case R.id.actualizacion:
+                    actualizarApp();
+                    break;
+            }//switch
+        }else {
+            alerta = new AlertDialog.Builder(ActivityMenu.this);
             alerta.setMessage("No hay Conexion a Internet").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.cancel();
                 }
             });
-            AlertDialog titulo = alerta.create();
+            titulo = alerta.create();
             titulo.setTitle("!ERROR! CONEXION");
             titulo.show();
         }//else
