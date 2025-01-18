@@ -28,6 +28,7 @@ import com.almacen.alamacen202.Activity.ActivityEnvTraspMultSuc;
 import com.almacen.alamacen202.Activity.ActivityInventario;
 import com.almacen.alamacen202.Activity.ActivityInventarioXProd;
 import com.almacen.alamacen202.Activity.ActivityLiberaciones;
+import com.almacen.alamacen202.Activity.ActivityRecepAlm;
 import com.almacen.alamacen202.Activity.ActivityRecepTraspMultSuc;
 import com.almacen.alamacen202.Activity.ActivityResurtBal;
 import com.almacen.alamacen202.Activity.ActivityRepEtiquetas;
@@ -418,6 +419,9 @@ public class ActivityMenu extends AppCompatActivity {
     public void ajusteUbi(View v){
         startActivity(new Intent(ActivityMenu.this, ActivityAjusteUbi.class));
     }
+    public void recepMorelos(View v){
+        startActivity(new Intent(ActivityMenu.this, ActivityRecepAlm.class));
+    }//recepcionMorelos
 
 
 

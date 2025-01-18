@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
@@ -1148,7 +1149,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
 
 
     private class AsyncConsulEnvTrasp extends AsyncTask<Void, Void, Void> {
-        private String suc,folio,linea;
+        private String suc,folio,linea,color="";
         private boolean conn;
         private ArrayList <String> listaLineas= new ArrayList<>();
         public AsyncConsulEnvTrasp(String suc, String folio,String linea) {
@@ -1198,6 +1199,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                             listaLineas.add(dato.getString("k_linea"));
                             TOTCAJAS=dato.getInt("k_ulcaj");
                             num++;mensaje="";
+                            color=dato.getString("k_color");
                         }//for
                     }catch (final JSONException e) {
                         runOnUiThread(new Runnable() {
@@ -1227,6 +1229,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             super.onPostExecute(aBoolean);
             mDialog.dismiss();
             if (lista.size()==0) {
+                scrollView.setBackgroundColor(Color.parseColor("#ffffff"));
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
                 builder.setTitle("AVISO");
                 builder.setMessage(mensaje);
@@ -1235,6 +1238,10 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }else{
+                if(color.equals("")){
+                    color="#ffffff";
+                }
+                scrollView.setBackgroundColor(Color.parseColor(color));
                 inFinBt(false);
                 txtFolBusq.setText(Folio);
                 keyboard.hideSoftInputFromWindow(txtFolBusq.getWindowToken(), 0);

@@ -712,7 +712,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         txtBuscaP.requestFocus();
     }//alertBuscaCajas
 
-    public void alertBusca(){
+    public void alertBusca() {
         //btnBusc.setEnabled(false);
         AlertDialog.Builder alert = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
         LayoutInflater inflater = ActivityRecepTraspMultSuc.this.getLayoutInflater();
@@ -728,10 +728,10 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 lvBus.setVisibility(View.GONE);
-                if(!txtBuscaP.getText().toString().equals("")){
-                    String comparar=txtBuscaP.getText().toString().trim();
-                    buscar(comparar,false);
-                }else{
+                if (!txtBuscaP.getText().toString().equals("")) {
+                    String comparar = txtBuscaP.getText().toString().trim();
+                    buscar(comparar, false);
+                } else {
                     Toast.makeText(ActivityRecepTraspMultSuc.this, "Campo Vacío", Toast.LENGTH_SHORT).show();
                 }//else
             }//onclick
@@ -744,7 +744,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 keyboard.hideSoftInputFromWindow(txtBuscaP.getWindowToken(), 0);
                 //btnBusc.setEnabled(true);
                 txtProd.requestFocus();
-                alertDialog=null;
+                alertDialog = null;
             }
         });//cerrar
 
@@ -1321,7 +1321,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         }
     }//onBackPressed
 
-    public boolean onCreateOptionsMenu(Menu menu) {
+    /*public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menuoverflow5, menu);
         MenuItem itemOtro = menu.findItem(R.id.itOtro);
         itemOtro.setTitle("Por Almacen Morelos");
@@ -1345,7 +1345,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }//onOptionsItemSelected
-
+    */
     public void imprimir(int Cont, BluetoothPrint imprimir) {
         String empresa;
         int imagen;
@@ -1439,8 +1439,6 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             builder6.setView(dialogView);
             builder6.setCancelable(false);
             dialog6 = builder6.create();
-            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
             dialog6.show();
 
             new Handler().postDelayed(new Runnable() {

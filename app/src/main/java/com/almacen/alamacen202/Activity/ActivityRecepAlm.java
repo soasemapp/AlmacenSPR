@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -79,14 +80,15 @@ public class ActivityRecepAlm extends AppCompatActivity {
     private AdaptadorRecepAlm adapter;
     private AlertDialog mDialog;
     private InputMethodManager keyboard;
-    private String urlImagenes,extImg;
-    private int sonido_correcto,sonido_error;
-    private SoundPool bepp;
-    private String almE;
+    private String urlImagenes,extImg,tipoRecp="";
+    //private int sonido_correcto,sonido_error;
+    //private SoundPool bepp;
+    private MediaPlayer mpError,mpCorrecto;
     private Intent dwIntent;
     Context context = this;
     AlertDialog dialog6 = null;
     AlertDialog.Builder builder6;
+    private ArrayList<String> listaNomAlm = new ArrayList<>();
     private AlertDialog alertDialog=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,9 +147,11 @@ public class ActivityRecepAlm extends AppCompatActivity {
         btnGuarda = findViewById(R.id.btnGuarda);
         chManual = findViewById(R.id.chManual);
 
-        bepp = new SoundPool(1, AudioManager.STREAM_MUSIC, 1);
+        /*bepp = new SoundPool(1, AudioManager.STREAM_MUSIC, 1);
         sonido_correcto = bepp.load(ActivityRecepAlm.this, R.raw.sonido_correct, 1);
-        sonido_error = bepp.load(ActivityRecepAlm.this, R.raw.error, 1);
+        sonido_error = bepp.load(ActivityRecepAlm.this, R.raw.error, 1);*/
+        mpCorrecto = MediaPlayer.create(context, R.raw.sonido_correct);
+        mpError=MediaPlayer.create(context, R.raw.error);
 
         rvTraspasos    = findViewById(R.id.rvTraspasos);
         rvTraspasos.setLayoutManager(new LinearLayoutManager(ActivityRecepAlm.this));
@@ -156,6 +160,28 @@ public class ActivityRecepAlm extends AppCompatActivity {
 
         txtProd.setInputType(InputType.TYPE_NULL);
         //txtProd.requestFocus();
+
+        listaNomAlm.add("---Seleccione tipo de recepción---");
+        listaNomAlm.add("Recepción Guadalajara");listaNomAlm.add("Recepción Fresnillo");
+        ArrayAdapter<String> adaptador = new ArrayAdapter<>(
+                ActivityRecepAlm.this,R.layout.drop_down_item,listaNomAlm);
+        spAlm.setAdapter(adaptador);
+        spAlm.setText(listaNomAlm.get(0),false);
+
+        spAlm.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                limpiar();
+                rvTraspasos.setAdapter(null);
+                if(position==1){//recepcion guadalajara
+                    tipoRecp="G";
+                }else if(position==2){
+                    tipoRecp="F";
+                }else{
+                    tipoRecp="";
+                }
+            }//onItemClick
+        });
 
         chManual.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -183,7 +209,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 new AsyncActualizar(listaTrasp.get(posicion).getProducto(),
-                                        cantsurt+"","change",false,Producto).execute();
+                                        cantsurt+"","change",false,Producto,tipoRecp).execute();
                             }
                         });
                         builder.setNegativeButton("CANCELAR",null);
@@ -193,7 +219,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
                                 listaTrasp.get(posicion).getProducto()+"?").create().show();
 
                     }else{
-                        bepp.play(sonido_error, 1, 1, 1, 0, 0);
+                        mpError.start();
                         Toast.makeText(ActivityRecepAlm.this, "Sobrepasa Cantidad", Toast.LENGTH_SHORT).show();
                     }//else
                 }else{
@@ -210,7 +236,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
                     posG=posicion;
                     new AsyncActualizar(listaTrasp.get(posicion).getProducto(),
                             listaTrasp.get(posicion).getCantSurt()+"",
-                            "alertbusca",false,Producto).execute();
+                            "alertbusca",false,Producto,tipoRecp).execute();
 
                 }else{
                     if(listaTrasp.size()>0) {
@@ -280,8 +306,12 @@ public class ActivityRecepAlm extends AppCompatActivity {
                     posG=posicion;
                     new AsyncActualizar(listaTrasp.get(posicion).getProducto(),
                             listaTrasp.get(posicion).getCantSurt()+"",
-                            "change",false,Producto).execute();
+                            "change",false,Producto,tipoRecp).execute();
                 }else {
+                    if(tipoRecp.equals("")){
+                        Toast.makeText(ActivityRecepAlm.this, "Selecciona Tipo de Recepción", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     rvTraspasos.setAdapter(null);
                     limpiar();
                     posicion=0;
@@ -313,16 +343,35 @@ public class ActivityRecepAlm extends AppCompatActivity {
                     posG=posicion;
                     new AsyncActualizar(listaTrasp.get(posicion).getProducto(),
                             listaTrasp.get(posicion).getCantSurt()+"",
-                            "change",false,Producto).execute();
+                            "change",false,Producto,tipoRecp).execute();
                 }else {
                     Toast.makeText(ActivityRecepAlm.this, "Sin cambios", Toast.LENGTH_SHORT).show();
                 }
             }//onclick
         });//btnCorr
+
+
+
         dwIntent = new Intent();
 
         //new AsyncConsulAlm().execute();
     }//onCreate
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mpCorrecto.stop();
+        mpError.stop();
+        mpCorrecto = MediaPlayer.create(context, R.raw.sonido_correct);
+        mpError=MediaPlayer.create(context, R.raw.error);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mpCorrecto.stop();
+        mpError.stop();
+    }
 
 
     public String folio(String folio){
@@ -362,7 +411,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
         } else if(tt.equals(prod)){//SIGNIFICA QUE ES EL MISMO CODIGO QUE ESTA SELECCIONADO
             actualizaDat(posicion,prod);
         }else{//
-            bepp.play(sonido_error, 1, 1, 1, 0, 0);
+            mpError.start();
             AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepAlm.this);
             builder.setTitle("AVISO");
             builder.setMessage("Escaneo de un código diferente");
@@ -394,7 +443,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
         }
         if(existe==false){
             btnBusc.setEnabled(true);
-            bepp.play(sonido_error, 1, 1, 1, 0, 0);
+            mpError.start();
             AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepAlm.this);
             builder.setTitle("AVISO");
             builder.setMessage("No existe "+Producto+" en la lista");
@@ -420,7 +469,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
             modificados=true;
             if((recep+cantS)==cant){
                 posG=pos;
-                new AsyncActualizar(prod,cantS+"","change",false,Producto).execute();
+                new AsyncActualizar(prod,cantS+"","change",false,Producto,tipoRecp).execute();
             }else{
                 dwIntent.putExtra("com.symbol.datawedge.api.SCANNER_INPUT_PLUGIN", "ENABLE_PLUGIN");
                 sendBroadcast(dwIntent);//HABILITAR ESCANER
@@ -429,7 +478,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
                 mostrarDetalleProd();
             }
         }else if((recep+cantS)>cant){
-            bepp.play(sonido_error, 1, 1, 1, 0, 0);
+            mpError.start();
             AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepAlm.this);
             builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
                 @Override
@@ -446,7 +495,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
                     "¿DESEA REINICIAR EL CONTEO DE LAS PIEZAS ESCANEADAS QUE ESTÁN SIN SINCRONIZAR?\n)");
             builder.setTitle("AVISO").create().show();
         }else{
-            bepp.play(sonido_error, 1, 1, 1, 0, 0);
+            mpError.start();
             AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepAlm.this);
             builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
                 @Override
@@ -538,7 +587,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
     public void cambio(String var,boolean sumar){
         if(listaTrasp.get(posG).isSincronizado() == false){//identificando que prod anterior no se sincronizó
             new AsyncActualizar(listaTrasp.get(posG).getProducto(),
-                    listaTrasp.get(posG).getCantSurt(),var,sumar,Producto).execute();
+                    listaTrasp.get(posG).getCantSurt(),var,sumar,Producto,tipoRecp).execute();
         }else{//cuando se escanea o por botones de adelante, atras y onclick en lista
             posG=posicion;
             tipoCambio(var);
@@ -755,15 +804,16 @@ public class ActivityRecepAlm extends AppCompatActivity {
 
     private class AsyncActualizar extends AsyncTask<Void, Void, Void> {
 
-        private String producto,cantidad,var,ProductoActual,newCant="",sob="";
+        private String producto,cantidad,var,ProductoActual,newCant="",sob="",tiporec;
         private boolean conn=true,sumar;
         public AsyncActualizar(String producto, String cantidad,
-                               String var,boolean sumar,String ProductoActual) {
+                               String var,boolean sumar,String ProductoActual,String tiporec) {
             this.producto = producto;
             this.cantidad = cantidad;
             this.var=var;
             this.sumar=sumar;
             this.ProductoActual=ProductoActual;
+            this.tiporec=tiporec;
         }
 
         @Override
@@ -778,7 +828,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
             conn=firtMet();
             if(conn==true){
                 String parametros="k_Sucursal="+strbran+"&k_Producto="+producto+
-                        "&k_Cantidad="+cantidad;
+                        "&k_Cantidad="+cantidad+"&k_tiporec="+tiporec+"";
                 String url = "http://"+strServer+"/InsertAlm?"+parametros;
                 String jsonStr = new HttpHandler().makeServiceCall(url,strusr,strpass);
                 if (jsonStr != null) {
@@ -820,7 +870,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
                 Toast.makeText(ActivityRecepAlm.this, "Sin conexión a internet", Toast.LENGTH_SHORT).show();
             }else if (mensaje.equals("SINCRONIZADO")) {
                 mDialog.dismiss();
-                bepp.play(sonido_correcto, 1, 1, 1, 0, 0);
+                mpCorrecto.start();
                 dwIntent.putExtra("com.symbol.datawedge.api.SCANNER_INPUT_PLUGIN", "ENABLE_PLUGIN");
                 sendBroadcast(dwIntent);//HABILITAR ESCANER
                 listaTrasp.get(posG).setCantSinc(newCant);
@@ -839,7 +889,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
                 }//else
 
             }else if(mensaje.equals("DIF")){
-                bepp.play(sonido_error, 1, 1, 1, 0, 0);
+                mpError.start();
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepAlm.this);
                 builder.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
                     @Override
@@ -858,7 +908,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
                 builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        new AsyncActualizar(producto,sob,var,sumar,ProductoActual).execute();
+                        new AsyncActualizar(producto,sob,var,sumar,ProductoActual,tiporec).execute();
                     }
                 });
                 builder.setCancelable(false);
@@ -871,7 +921,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
                 mDialog.dismiss();
                 if(newCant.equals("")){newCant=listaTrasp.get(posG).getCantSinc();}
                 if(sob.equals("")){sob=listaTrasp.get(posG).getCantSurt();}
-                bepp.play(sonido_error, 1, 1, 1, 0, 0);
+                mpError.start();
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepAlm.this);
                 builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
                     @Override
@@ -897,93 +947,6 @@ public class ActivityRecepAlm extends AppCompatActivity {
             }//else
         }//onPost
     }//AsyncActualizar
-
-    private class AsyncConsulAlm extends AsyncTask<Void, Void, String> {
-
-        private boolean conn;
-        private ArrayList <String> listaAlm= new ArrayList<>();
-        private ArrayList <String> listaNomAlm= new ArrayList<>();
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            almE="";
-            if(mDialog.isShowing()==false){
-                mDialog.show();
-            }
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            conn=firtMet();
-            if(conn==true){
-                String parametros="k_Sucursal="+strbran;
-                String url = "http://"+strServer+"/consulAlm?"+parametros;
-                String jsonStr = new HttpHandler().makeServiceCall(url,strusr,strpass);
-                if(jsonStr != null) {
-                    try {
-
-                        JSONObject jsonObj = new JSONObject(jsonStr);
-                        JSONArray jsonArray = jsonObj.getJSONArray("Response");
-                        for(int i=0;i<jsonArray.length();i++){
-                            JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
-                            listaAlm.add(dato.getString("k_alm"));
-                            listaNomAlm.add(dato.getString("k_nomAlm"));
-                            mensaje="";
-                        }//for
-                    } catch (final JSONException e) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mensaje="Sin datos";
-                            }//run
-                        });
-                    }//catch JSON EXCEPTION
-                }else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mensaje="Problema actualizar";
-                        }//run
-                    });//runUniTthread
-                }//else
-                return null;
-            }else{
-                mensaje="Problemas de conexión";
-                return null;
-            }//else
-        }//doInBackground
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            if(conn==true && mensaje.equals("")) {
-                mDialog.dismiss();
-                ArrayAdapter<String> adaptador = new ArrayAdapter<>(
-                        ActivityRecepAlm.this,R.layout.drop_down_item,listaNomAlm);
-                spAlm.setAdapter(adaptador);
-                spAlm.setText(listaNomAlm.get(0),false);
-                almE=listaAlm.get(0);
-
-                spAlm.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        limpiar();
-                        rvTraspasos.setAdapter(null);
-                        almE = listaAlm.get(position);
-                    }//onItemClick
-                });
-            }else{
-                mDialog.dismiss();
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepAlm.this);
-                builder.setTitle("AVISO");
-                builder.setMessage("Problema al consultar almacenes");
-                builder.setCancelable(false);
-                builder.setNegativeButton("OK",null);
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }//else<
-        }//onPost
-    }//AsyncConsulAlm
 
     @Override
     public void onBackPressed() {
@@ -1018,7 +981,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
                     posG=posicion;
                     new AsyncActualizar(listaTrasp.get(posicion).getProducto(),
                             listaTrasp.get(posicion).getCantSurt()+"",
-                            "change",false,Producto).execute();
+                            "change",false,Producto,tipoRecp).execute();
                 }else {
                     startActivity(new Intent(ActivityRecepAlm.this, ActivityRecepTraspMultSuc.class));
                     finish();

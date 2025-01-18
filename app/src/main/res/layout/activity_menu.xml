@@ -597,8 +597,31 @@
                             android:gravity="center"
                             android:layout_margin="5dp"
                             android:orientation="vertical"
-                            app:backgroundTint="@null"
-                            android:visibility="invisible">
+                            android:onClick="recepMorelos"
+                            app:backgroundTint="@null">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:lines="2"
+                                android:maxLines="2"
+                                android:padding="5dp"
+                                android:textAlignment="center"
+                                android:text="Recepción Morelos"
+                                android:textColor="@color/ColorWhite"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="35dp"
+                                android:layout_margin="5dp"
+                                android:contentDescription="Manos"
+                                android:src="@drawable/icon_montacarga" />
+
+
                         </LinearLayout>
 
                     </LinearLayout>

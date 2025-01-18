@@ -28,15 +28,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                android:hint="Almacén"
+                android:hint="@string/recepcion"
                 android:textColorHint="@color/AzulBack"
                 app:hintTextColor="@color/AzulBack"
                 app:boxBackgroundColor="@color/ColorWhite"
                 app:boxBackgroundMode="outline"
                 app:boxCornerRadiusTopEnd="10dp"
                 app:boxCornerRadiusTopStart="10dp"
-                app:boxStrokeColor="@color/colorPrimary"
-                android:enabled="false">
+                app:boxStrokeColor="@color/colorPrimary">
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/spAlm"
                     android:layout_width="match_parent"
@@ -45,10 +44,9 @@
                     android:textSize="15sp"
                     android:fontFamily="sans-serif-condensed"
                     android:textStyle="italic"
-                    android:text="Morelos"
+                    android:text=""
                     android:textColor="@color/colorBlack"
                     android:inputType="none"
-                    android:enabled="false"
                     android:focusable="false"/>
             </com.google.android.material.textfield.TextInputLayout>
 
