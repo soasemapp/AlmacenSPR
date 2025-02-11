@@ -524,7 +524,7 @@ public class BluetoothPrint extends AppCompatActivity {
 
             msg = "Ticket Recep Trasp " + contDialogCajas + "\n";
             msg += "____________________________ \n";
-            msg += "PRODUCTO SURT  UBIC\n";
+            msg += "PRODUCTO   SUR TOTS UBIC\n";
             outputStream.write(msg.getBytes());
 
 
@@ -533,6 +533,7 @@ public class BluetoothPrint extends AppCompatActivity {
                 String Producto = listaTraspFiltro.get(i).getProducto();
                 String Cantidad = (Integer.parseInt(listaTraspFiltro.get(i).getCantSurt())+
                         Integer.parseInt(listaTraspFiltro.get(i).getCantSinc()))+"";
+                String sobr= listaTraspFiltro.get(i).getSobrantes();
                 String ubi=listaTraspFiltro.get(i).getUbic();
                 if (Producto.length() < 11) {
                     int espacios = Producto.length();
@@ -544,11 +545,25 @@ public class BluetoothPrint extends AppCompatActivity {
                     }
                 }
 
-                if (Cantidad.length() < 3) {
+
+                if (sobr.length() < 4) {
+
+                    int espacios = sobr.length();
+                    int opera = 0;
+                    opera = 4 - espacios;
+
+                    for (int k = 0; k < opera; k++) {
+
+                        sobr += " ";
+
+                    }
+                }
+
+                if (Cantidad.length() < 5) {
 
                     int espacios = Cantidad.length();
                     int opera = 0;
-                    opera = 3 - espacios;
+                    opera = 5 - espacios;
 
                     for (int k = 0; k < opera; k++) {
 
@@ -556,6 +571,7 @@ public class BluetoothPrint extends AppCompatActivity {
 
                     }
                 }
+
                 if (ubi.length() < 13) {
 
                     int espacios = ubi.length();
@@ -563,27 +579,26 @@ public class BluetoothPrint extends AppCompatActivity {
                     opera = 13 - espacios;
 
                     for (int k = 0; k < opera; k++) {
-                        ubi += " ";
+                        ubi += "";
                     }//for
                 }//if
 
 
 
-                msg += Producto + Cantidad +ubi+"\n";
+                msg += Producto + sobr +Cantidad+ubi+"\n";
                 outputStream.write(msg.getBytes());
                 outputStream.flush();
             }//for
 
             msg = "\n";
-            int cantidatotal = 0;
+            int cantidatotal = 0,cantsobr=0;
             for (int k = 0; k < listaTraspFiltro.size(); k++) {
-                if(listaTraspFiltro.get(k).isSincronizado()==true) {//solo los producto sincronizados
-                    cantidatotal = cantidatotal + (Integer.parseInt(listaTraspFiltro.get(k).getCantSurt())
+                cantidatotal = cantidatotal + (Integer.parseInt(listaTraspFiltro.get(k).getCantSurt())
                             +Integer.parseInt(listaTraspFiltro.get(k).getCantSinc()));
-                }//if
+                cantsobr=cantsobr+(Integer.parseInt(listaTraspFiltro.get(k).getSobrantes()));
             }//for k
 
-            msg += "Total:" + cantidatotal + "\n";
+            msg += "TotSurt:"+cantsobr+" Total:" + cantidatotal + "\n";
             outputStream.write(ESC_ALIGN_RIGHT);
             outputStream.write(msg.getBytes());
             msg = "\n";

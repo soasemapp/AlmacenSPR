@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -124,11 +125,12 @@ public class ActivityLiberaciones extends AppCompatActivity {
     String RazonSuper;
 
 
-    private SoundPool bepp;
+    /*private SoundPool bepp;
     int sonido_de_reproduccion0;
     int sonido_de_reproduccion1;
     int sonido_de_reproduccion2;
-    int sonido_de_reproduccion3;
+    int sonido_de_reproduccion3;*/
+    private MediaPlayer sonido_de_reproduccion0,sonido_de_reproduccion1,sonido_de_reproduccion2,sonido_de_reproduccion3;
     Spinner SpUbicacion;
     int cont = 0;
     int botonsumores;
@@ -243,11 +245,10 @@ public class ActivityLiberaciones extends AppCompatActivity {
         AscDescSwitch = findViewById(R.id.AscDescSwitch);
         CageSave = findViewById(R.id.BotonSolo);
 
-        bepp = new SoundPool(1, AudioManager.STREAM_MUSIC, 1);
-        sonido_de_reproduccion0 = bepp.load(ActivityLiberaciones.this, R.raw.beep, 1);
-        sonido_de_reproduccion1 = bepp.load(ActivityLiberaciones.this, R.raw.error, 1);
-        sonido_de_reproduccion2 = bepp.load(ActivityLiberaciones.this, R.raw.terminado, 1);
-        sonido_de_reproduccion3 = bepp.load(ActivityLiberaciones.this, R.raw.medioter, 1);
+        sonido_de_reproduccion0 = MediaPlayer.create(context, R.raw.beep);
+        sonido_de_reproduccion1 = MediaPlayer.create(context, R.raw.error);
+        sonido_de_reproduccion2 = MediaPlayer.create(context, R.raw.terminado);
+        sonido_de_reproduccion3 = MediaPlayer.create(context, R.raw.medioter);
 
 
         strusr = preference.getString("user", "null");
@@ -584,7 +585,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                         Cantidad = Integer.parseInt(listaProduAduana.get(contlis).getCantidad());
                         CantidadSur = Integer.parseInt(listaProduAduana.get(contlis).getCantidadSurtida());
                         if (Cantidad != CantidadSur) {
-                            bepp.play(sonido_de_reproduccion0, 1, 1, 1, 0, 0);
+                            sonido_de_reproduccion0.start();
 
                             listaProduAduana.get(contlis).setCantidadSurtida(String.valueOf(Integer.parseInt(listaProduAduana.get(contlis).getCantidadSurtida()) + 1));
                             txtCantidadSurtida.setText(listaProduAduana.get(contlis).getCantidadSurtida() + " " + listaProduAduana.get(contlis).getUnidad());
@@ -655,7 +656,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
 
                         } else {
-                            bepp.play(sonido_de_reproduccion3, 1, 1, 1, 0, 0);
+                            sonido_de_reproduccion3.start();
 
                             AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
                             alerta.setMessage("ESTE CODIGO A SIDO TERMINADO DE ESCANEAR").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
@@ -861,7 +862,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                     }
 
                 } else {
-                    bepp.play(sonido_de_reproduccion0, 1, 1, 1, 0, 0);
+                    sonido_de_reproduccion0.start();
                     listaCajas.add(new CAJASSANDG(listaProduAduana.get(contlis).getSucursal(), "1", listaProduAduana.get(contlis).getFolio(), listaProduAduana.get(contlis).getProducto(), "1", String.valueOf(ContCajas)));
                     txtCantidadSurtida.setText("1 " + listaProduAduana.get(contlis).getUnidad());
                     listaProduAduana.get(contlis).setCantidadSurtida(String.valueOf(Integer.parseInt(listaProduAduana.get(contlis).getCantidadSurtida()) + 1));
@@ -944,7 +945,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
 
             } else {
-                bepp.play(sonido_de_reproduccion1, 1, 1, 1, 0, 0);
+                sonido_de_reproduccion1.start();
                 AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
                 alerta.setMessage("ESTE CODIGO POR EL MOMENTO NO SE ESTA ESCANEANDO").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
@@ -962,7 +963,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
             }
         } else {
 
-            bepp.play(sonido_de_reproduccion2, 1, 1, 0, 0, 1);
+            sonido_de_reproduccion2.start();
 
 
             AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -4300,7 +4301,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
 
                     } else {
-                        bepp.play(sonido_de_reproduccion3, 1, 1, 1, 0, 0);
+                        sonido_de_reproduccion3.start();
 
                         AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
                         alerta.setMessage("ESTE CODIGO A SIDO TERMINADO DE ESCANEAR").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
@@ -6167,7 +6168,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
             Button btncambiar =  dialogView.findViewById(R.id.btnCambiar);
             EditText txtCajaProd = dialogView.findViewById(R.id.txtCajaProd);
-            EditText txtCajaOrigen =dialogView.findViewById(R.id.txtCajaOrigen);
+            AutoCompleteTextView txtCajaOrigen =dialogView.findViewById(R.id.txtCajaOrigen);
             EditText txtCajaCant = dialogView.findViewById(R.id.txtCajaCant);
             EditText txtCajaDestino =  dialogView.findViewById(R.id.txtCajaDestino);
             EditText txtCantidad =  dialogView.findViewById(R.id.txtCantidad);

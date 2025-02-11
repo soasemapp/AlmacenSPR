@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Almacen Kepler</string>
     <string name="buscar">Buscar</string>
-    <string name="buscarencaja">Buscar En Cajas</string>
+    <string name="buscarencaja">Buscar en Caja</string>
     <string name="buscarfolio">Buscar Folio</string>
-    <string name="version_1_6">Version 1.13.7</string>
-    <string name="versionNum">1.13.7</string>
+    <string name="version_1_6">Version 1.13.9</string>
+    <string name="versionNum">1.13.9</string>
     <string name="actualizarapp">NUEVA ACTUALIZACIÓN</string>
     <string name="usuario">Usuario</string>
     <string name="escanear">Escanear</string>
@@ -63,6 +63,9 @@
     <string name="shark">shark/</string>
     <!-- https://sprautomotive.com/es_MX/res/img/products/md/-->
     <string name="versionBaseDatos">4</string>
+    <string name="cambiar_de_caja_o_palet">Cambiar de caja o palet</string>
+    <string name="cambiarcaja">CAMBIAR CAJA</string>
+    <string name="CAJA">CAJA</string>
 
     <!-- NOMBRES WEB SERVICES -->
     <string name="resActualizaDif">resActualizaDif</string>

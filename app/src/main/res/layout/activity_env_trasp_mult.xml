@@ -19,6 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:background="@color/ColorWhite"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp">
@@ -98,8 +99,8 @@
                     android:layout_weight="2"
                     android:hint="CAJA"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:textColorHint="@color/colorRed"
-                    app:hintTextColor="@color/colorRed"
+                    android:textColorHint="@color/colorBlack"
+                    app:hintTextColor="@color/colorBlack"
                     app:boxBackgroundMode="outline"
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp"
@@ -111,12 +112,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingLeft="5dp"
-                        android:textSize="15dp"
+                        android:textSize="18dp"
                         android:text=" "
                         android:focusable="false"
                         android:fontFamily="sans-serif-condensed"
                         android:textStyle="italic|bold"
-                        android:textColor="@color/colorBlack"
+                        android:textColor="@color/colorRed"
                         android:inputType="none"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -213,32 +214,57 @@
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="@string/escanear"
-                android:textColorHint="@color/AzulBack"
-                app:hintTextColor="@color/AzulBack"
-                android:maxLines="1"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopEnd="10dp"
-                app:boxCornerRadiusTopStart="10dp"
-                app:startIconTint="@null"
-                app:boxBackgroundColor="@color/ColorWhite"
-                app:boxStrokeColor="@color/colorPrimary">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/txtProducto"
+                android:orientation="horizontal">
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxLength="15"
+                    android:layout_weight="1"
+                    android:hint="@string/escanear"
+                    android:textColorHint="@color/AzulBack"
+                    app:hintTextColor="@color/AzulBack"
                     android:maxLines="1"
-                    android:textSize="15dp"
-                    android:textColor="#000000"
-                    android:inputType="text"
-                    android:enabled="false"
-                    android:imeOptions="actionSearch"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:startIconTint="@null"
+                    app:boxBackgroundColor="@color/ColorWhite"
+                    app:boxStrokeColor="@color/colorPrimary">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtProducto"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLength="15"
+                        android:maxLines="1"
+                        android:textSize="15dp"
+                        android:textColor="#000000"
+                        android:inputType="text"
+                        android:enabled="false"
+                        android:imeOptions="actionSearch"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCambiarCaja"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="3dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_background3"
+                    android:maxLines="2"
+                    android:text="@string/cambiarcaja"
+                    android:textColor="@color/ColorWhite"
+                    android:textSize="10dp"
+                    app:backgroundTint="@null"
+                    app:icon="@drawable/icon_actualizar"
+                    app:iconGravity="end"
+                    app:iconSize="20dp"
+                    app:iconTint="@color/ColorWhite"
+                    android:enabled="false"/>
+            </LinearLayout>
+
 
 
             <LinearLayout
@@ -307,7 +333,8 @@
                             android:layout_height="wrap_content"
                             android:clickable="true"
                             android:maxLines="1"
-                            android:textSize="13dp"
+                            android:textSize="15dp"
+                            android:textStyle="bold"
                             android:textColor="@color/colorBlack"
                             android:enabled="false"/>
 
@@ -331,7 +358,8 @@
                             android:layout_height="wrap_content"
                             android:clickable="true"
                             android:maxLines="1"
-                            android:textSize="13dp"
+                            android:textSize="15dp"
+                            android:textStyle="bold"
                             android:textColor="@color/colorBlack"
                             android:enabled="false"/>
                     </com.google.android.material.textfield.TextInputLayout>
@@ -363,7 +391,8 @@
                                 android:inputType="phone"
                                 android:imeOptions="actionDone"
                                 android:digits="0123456789"
-                                android:textSize="13dp"
+                                android:textSize="15dp"
+                                android:textStyle="bold"
                                 android:textColor="@color/colorBlack"
                                 android:enabled="false" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -628,7 +657,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="250dp"
                     android:background="@color/ColorGris"
-                    android:scrollbars="vertical"
+                    android:scrollbarSize="18dp"
+                    app:fastScrollEnabled="true"
+                    app:fastScrollHorizontalThumbDrawable="@drawable/thumb_drawable"
+                    app:fastScrollHorizontalTrackDrawable="@drawable/line"
+                    app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawable"
+                    app:fastScrollVerticalTrackDrawable="@drawable/line"
                     android:focusable="false"/>
 
             </LinearLayout>

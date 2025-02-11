@@ -758,7 +758,7 @@ public class ActivityRecepAlm extends AppCompatActivity {
                             JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
                             listaTrasp.add(new Traspasos(num+"",dato.getString("PRODUCTO")
                                     ,dato.getString("CANTIDAD"),dato.getString("UBICACION"),
-                                    dato.getString("RECEPCION"),"0","0",true));
+                                    dato.getString("RECEPCION"),"0","0","",true));
                             num++;
                             mensaje="";
                         }//for

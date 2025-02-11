@@ -86,29 +86,20 @@
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:id="@+id/cont0"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:hint="Caja Origen"
-            android:layout_marginTop="5dp"
             android:textColorHint="@color/AzulBack"
             app:hintTextColor="@color/AzulBack"
-            android:maxLines="1"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusTopStart="10dp"
-            app:boxBackgroundColor="@color/ColorWhite"
-            app:boxStrokeColor="@color/colorPrimary">
-
-            <com.google.android.material.textfield.TextInputEditText
+            android:maxLines="1">
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/txtCajaOrigen"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:imeOptions="actionNext"
-                android:inputType="phone"
-                android:digits="0123456789"
-                android:maxLength="3"
+                android:inputType="none"
+                android:focusable="false"
                 android:maxLines="1"
                 android:textSize="15dp"
                 android:fontFamily="sans-serif-condensed-medium"
