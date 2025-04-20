@@ -90,6 +90,8 @@
             android:configChanges="screenSize|orientation"
             android:parentActivityName=".ActivityMenu"/>
 
+        <activity android:name=".Activity.AduanaActivity" />
+        <activity android:name=".Activity.AduanaDetailActivity" />
 
         <activity android:name=".ActivityMenu" />
         <activity android:name=".ActivitySplash" />

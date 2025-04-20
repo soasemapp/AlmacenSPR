@@ -36,6 +36,7 @@ import com.almacen.alamacen202.Activity.ActivityResurtidoPicking;
 import com.almacen.alamacen202.Activity.ActivityRecepConten;
 import com.almacen.alamacen202.Activity.ActivityTrasladoUbi;
 import com.almacen.alamacen202.Activity.ActivityInventarioXfolioComp;
+import com.almacen.alamacen202.Activity.AduanaActivity;
 import com.almacen.alamacen202.Sqlite.ConexionSQLiteHelper;
 import com.almacen.alamacen202.includes.HttpHandler;
 import com.almacen.alamacen202.includes.MyToolbar;
@@ -422,6 +423,9 @@ public class ActivityMenu extends AppCompatActivity {
     public void recepMorelos(View v){
         startActivity(new Intent(ActivityMenu.this, ActivityRecepAlm.class));
     }//recepcionMorelos
+    public void aduanalist(View v){
+        startActivity(new Intent(ActivityMenu.this, AduanaActivity.class));
+    }
 
 
 

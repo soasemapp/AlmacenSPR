@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Contenido Scrollable -->
+    <ScrollView
+        android:id="@+id/scrollContenido"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnGenerarDocumento"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Encabezado con líneas -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/AzulBack"
+                android:padding="16dp"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_user"
+
+                        android:layout_marginEnd="8dp" />
+                    <TextView
+                        android:id="@+id/textNombre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nombre:"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/white"
+                    android:layout_marginVertical="4dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_document"
+
+                        android:layout_marginEnd="8dp" />
+                    <TextView
+                        android:id="@+id/textFolio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Folio:"
+                        android:textColor="@android:color/white" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/white"
+                    android:layout_marginVertical="4dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_store"
+
+                        android:layout_marginEnd="8dp" />
+                    <TextView
+                        android:id="@+id/textSucursal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sucursal:"
+                        android:textColor="@android:color/white" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Tabla scroll horizontal -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fillViewport="true"
+                android:scrollbars="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Cabecera -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@android:color/darker_gray"
+                        android:padding="8dp"
+                        android:showDividers="middle"
+                        android:divider="?android:attr/dividerHorizontal">
+
+                        <TextView
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:text="SKU"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:textColor="@android:color/white"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:layout_width="220dp"
+                            android:layout_height="wrap_content"
+                            android:text="Descripción"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/white"
+                            android:textSize="13sp"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:text="Partida"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/white"
+                            android:textSize="13sp"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:text="pedido"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/white"
+                            android:textSize="13sp"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:text="Surtido"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/white"
+                            android:textSize="13sp"
+                            android:gravity="center" />
+                    </LinearLayout>
+
+                    <!-- Lista de productos -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewDetalleProducto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false" />
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+    </ScrollView>
+
+
+    <Button
+        android:id="@+id/btnGenerarDocumento"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Generar Documento"
+        android:textAllCaps="false"
+        android:backgroundTint="@color/AzulBack"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>
